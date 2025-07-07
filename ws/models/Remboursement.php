@@ -4,6 +4,19 @@ require_once __DIR__ . '/../db.php';
 class Remboursement
 {
 
+    public static function getRemboursementsEnAttente()
+    {
+        $db = getDB();
+        $stmt = $db->prepare("
+        SELECT r.*
+        FROM remboursement r
+        JOIN remboursement_statut rs ON r.idremboursement = rs.idremboursement
+        WHERE rs.idstatut = 1
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function insert($data)
     {
         $db = getDB();
