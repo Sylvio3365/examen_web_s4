@@ -19,13 +19,11 @@ class PretController
     {
         $dateDebut = Flight::request()->data->date_debut ?? '';
         $dateFin = Flight::request()->data->date_fin ?? '';
-
         if (!empty($dateDebut) && !empty($dateFin)) {
             $interets = Pret::getInteretsParPeriode($dateDebut, $dateFin);
         } else {
             $interets = Pret::getAllInterets();
         }
-
         Flight::json([
             'interets' => $interets,
             'dateDebut' => $dateDebut,
@@ -33,10 +31,10 @@ class PretController
         ]);
     }
 
-    // public static function addRemboursement()
-    // {
-    //     Flight::json(Pret::insertIntoRemboursement());
-    // }
+    public static function addRemboursement()
+    {
+        Flight::json(Pret::insertIntoRemboursement(10));
+    }
 
     public static function addPret()
     {

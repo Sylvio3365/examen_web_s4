@@ -84,30 +84,38 @@ CREATE TABLE sortant (
     idmotif INT NOT NULL,
     idpret INT NOT NULL,
     PRIMARY KEY (idsortant),
-    UNIQUE (idpret),
     FOREIGN KEY (idmotif) REFERENCES motif (idmotif),
     FOREIGN KEY (idpret) REFERENCES pret (idpret)
 );
 
--- Table Prêt_statut
-CREATE TABLE pret_statut (
-    idpret INT,
-    idstatut INT,
-    date_modif DATE,
-    PRIMARY KEY (idpret, idstatut),
-    FOREIGN KEY (idpret) REFERENCES pret (idpret),
-    FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
-);
-
 -- Table Remboursement_statut
 CREATE TABLE remboursement_statut (
+    idremboursement_statut INT AUTO_INCREMENT,
     idremboursement INT,
     idstatut INT,
     date_modif DATE,
-    PRIMARY KEY (idremboursement, idstatut),
+    PRIMARY KEY ( idremboursement_statut),
     FOREIGN KEY (idremboursement) REFERENCES remboursement (idremboursement),
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );
+
+CREATE TABLE pret_statut (
+    idpret_statut INT AUTO_INCREMENT,
+    date_modif DATE,
+    idstatut INT NOT NULL,
+    idpret INT NOT NULL,
+    PRIMARY KEY (idpret_statut),
+    FOREIGN KEY (idstatut) REFERENCES statut (idstatut),
+    FOREIGN KEY (idpret) REFERENCES pret (idpret)
+);
+
+ALTER TABLE typepret ADD COLUMN deleted_at DATE;
+
+ALTER TABLE typepret ADD COLUMN taux_assurance FLOAT DEFAULT 0;
+
+ALTER TABLE remboursement ADD COLUMN assurance FLOAT DEFAULT 0;
+
+ALTER TABLE remboursement MODIFY COLUMN valeur_nette FLOAT DEFAULT 0;
 
 -- Insertion dans Statut
 INSERT INTO
@@ -122,4 +130,3 @@ INSERT INTO
 VALUES ('Prêt'),
     ('Ajout de fonds'),
     ('Remboursement');
-
