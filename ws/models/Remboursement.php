@@ -1,0 +1,35 @@
+<?php
+require_once __DIR__ . '/../db.php';
+
+class Remboursement
+{
+
+    public static function insert($data)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("INSERT INTO remboursement (
+            mois, annee, emprunt_restant, interet_mensuel, assurance, amortissement, echeance, valeur_nette, idpret
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmt->execute([
+            $data['mois'],
+            $data['annee'],
+            $data['emprunt_restant'],
+            $data['interet_mensuel'],
+            $data['assurance'],
+            $data['amortissement'],
+            $data['echeance'],
+            $data['valeur_nette'],
+            $data['idpret']
+        ]);
+    }
+
+    public static function insertStatut($idremboursement, $idstatut)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("INSERT INTO remboursement_statut (
+            idremboursement, idstatut, date_modif
+        ) VALUES (?, ?, NOW())");
+        $stmt->execute([$idremboursement, $idstatut]);
+    }
+}

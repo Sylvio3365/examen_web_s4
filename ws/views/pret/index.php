@@ -13,27 +13,43 @@
     <a href="interets" class="admin-link">Voir les intérêts</a>
         <h2>Simulez votre prêt</h2>
 
+        <!-- Type de prêt -->
         <label for="type_pret">Type de prêt</label>
         <select id="type_pret"></select>
 
+        <!-- Client -->
+        <label for="idclient">Client</label>
+        <select id="idclient">
+            <option value="">-- Choisir un client --</option>
+        </select>
+
+        <!-- Montant -->
         <label for="montant">Montant (en Ar)</label>
         <input type="number" id="montant" step="50" />
         <input type="range" id="amountRange" step="50" />
 
+        <!-- Durée -->
         <label for="duree">Durée (mois)</label>
         <input type="number" id="duree" />
         <input type="range" id="dureeRange" />
 
-        <div style="margin-top: 20px;">
-            Payer après :
-            <input type="number" name="delai" id="delai" value="0" min="0" max="12" style="width: 60px;" /> mois
-        </div>
+        <!-- Délai -->
+        <label for="delai">Payer après (mois)</label>
+        <input type="number" id="delai" value="0" min="0" max="12" style="width: 60px;" />
 
+        <!-- Assurance -->
+        <label>
+            <input type="checkbox" id="avec_assurance" />
+            Ajouter une assurance (calculée selon le type de prêt)
+        </label>
+
+        <!-- Résultat -->
         <div class="result-box" id="resultat">
             Mensualité : <span id="echeance">0</span> Ar
         </div>
 
         <button class="simulate-btn" onclick="calculer()">SIMULER UN PRÊT</button>
+        <button class="simulate-btn" onclick="enregistrerPret()">ENREGISTRER LE PRÊT</button>
     </div>
 
     <script>
@@ -45,76 +61,74 @@
         const montantRange = document.getElementById("amountRange");
         const dureeInput = document.getElementById("duree");
         const dureeRange = document.getElementById("dureeRange");
+        const delaiInput = document.getElementById("delai");
+        const avecAssuranceInput = document.getElementById("avec_assurance");
         const echeanceAffiche = document.getElementById("echeance");
+        const idClientSelect = document.getElementById("idclient");
 
-        // AJAX helper
         function ajax(method, url, data, callback) {
             const xhr = new XMLHttpRequest();
             xhr.open(method, apiBase + url, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    callback(JSON.parse(xhr.responseText));
+                if (xhr.readyState === 4) {
+                    try {
+                        const json = JSON.parse(xhr.responseText);
+                        callback(json);
+                    } catch (e) {
+                        alert("Erreur serveur : " + xhr.responseText);
+                    }
                 }
             };
             xhr.send(data);
         }
 
-        // Charger types de prêts
         function chargerTypesPret() {
             ajax("GET", "/typeprets", null, (response) => {
                 typePrets = response;
                 typeSelect.innerHTML = "";
-
                 typePrets.forEach((tp, index) => {
                     const opt = document.createElement("option");
                     opt.value = index;
-                    opt.textContent = `Type ${tp.nom}, TA ${tp.taux_annuel} %`;
+                    opt.textContent = `${tp.nom} - ${tp.taux_annuel}%`;
                     typeSelect.appendChild(opt);
                 });
-
                 typeSelect.addEventListener("change", appliquerInfosTypePret);
-                appliquerInfosTypePret(); // Initialisation
+                appliquerInfosTypePret();
+            });
+        }
+
+        function chargerClients() {
+            ajax("GET", "/clients", null, (clients) => {
+                idClientSelect.innerHTML = '<option value="">-- Choisir un client --</option>';
+                clients.forEach(c => {
+                    const option = document.createElement("option");
+                    option.value = c.idclient;
+                    option.textContent = `${c.nom} ${c.prenom}`;
+                    idClientSelect.appendChild(option);
+                });
             });
         }
 
         function appliquerInfosTypePret() {
             const tp = typePrets[typeSelect.value];
+            if (!tp) return;
 
-            const montantMin = parseFloat(tp.montant_min);
-            const montantMax = parseFloat(tp.montant_max);
+            const min = parseFloat(tp.montant_min);
+            const max = parseFloat(tp.montant_max);
             const dureeMax = parseInt(tp.duree_max);
-            const taux = parseFloat(tp.taux_annuel);
 
-            const stepMontant = 50; // 🔁 Fixé à 50 Ar
-            const stepDuree = 1;
+            montantInput.min = montantRange.min = min;
+            montantInput.max = montantRange.max = max;
+            montantInput.value = montantRange.value = min;
 
-            // Champs Montant
-            montantInput.min = montantMin;
-            montantInput.max = montantMax;
-            montantInput.step = stepMontant;
-            montantInput.value = montantMin;
-
-            montantRange.min = montantMin;
-            montantRange.max = montantMax;
-            montantRange.step = stepMontant;
-            montantRange.value = montantMin;
-
-            // Champs Durée
-            dureeInput.min = 1;
-            dureeInput.max = dureeMax;
-            dureeInput.step = stepDuree;
-            dureeInput.value = dureeMax;
-
-            dureeRange.min = 1;
-            dureeRange.max = dureeMax;
-            dureeRange.step = stepDuree;
-            dureeRange.value = dureeMax;
+            dureeInput.min = dureeRange.min = 1;
+            dureeInput.max = dureeRange.max = dureeMax;
+            dureeInput.value = dureeRange.value = dureeMax;
 
             calculer();
         }
 
-        // Synchronisation sliders <-> inputs
         montantRange.addEventListener("input", () => {
             montantInput.value = montantRange.value;
             calculer();
@@ -130,39 +144,66 @@
             calculer();
         });
 
+
         dureeInput.addEventListener("input", () => {
             dureeRange.value = dureeInput.value;
             calculer();
         });
 
-        // 💰 Calcul d'échéance mensuelle pour un prêt à annuités constantes
-        function calculer() {
-            if (typeSelect.value === "") return;
+        avecAssuranceInput.addEventListener("change", calculer); // ✅ AJOUT ICI
 
+        function calculer() {
             const tp = typePrets[typeSelect.value];
             const montant = parseFloat(montantInput.value);
             const duree = parseInt(dureeInput.value);
-            const tauxAnnuel = parseFloat(tp.taux_annuel) / 100;
-            console.log(tauxAnnuel);
-            const tauxMensuel = tauxAnnuel / 12;
+            const tauxMensuel = parseFloat(tp.taux_annuel) / 100 / 12;
+            const tauxAssurance = avecAssuranceInput.checked ? parseFloat(tp.taux_assurance || 0) : 0;
 
-            if (isNaN(montant) || isNaN(duree) || isNaN(tauxMensuel) || duree <= 0) {
+            if (isNaN(montant) || isNaN(duree) || duree <= 0) {
                 echeanceAffiche.textContent = "0";
                 return;
             }
 
-            let echeance = 0;
-
+            // Calcul de la mensualité sans assurance
+            let mensualite = 0;
             if (tauxMensuel === 0) {
-                echeance = montant / duree;
+                mensualite = montant / duree;
             } else {
-                echeance = (montant * tauxMensuel) / (1 - Math.pow(1 + tauxMensuel, -duree));
+                mensualite = (montant * tauxMensuel) / (1 - Math.pow(1 + tauxMensuel, -duree));
             }
 
-            echeanceAffiche.textContent = Math.round(echeance).toLocaleString("fr-FR");
+            // Calcul assurance totale puis par mois
+            const assuranceTotale = montant * (tauxAssurance / 100);
+            const assuranceMensuelle = assuranceTotale / duree;
+            // Mensualité finale
+            const mensualiteTotale = mensualite + assuranceMensuelle;
+            // Affichage
+            echeanceAffiche.textContent = Math.round(mensualiteTotale).toLocaleString("fr-FR");
         }
 
-        window.onload = chargerTypesPret;
+        function enregistrerPret() {
+            const tp = typePrets[typeSelect.value];
+            const idclient = idClientSelect.value;
+
+            if (!idclient) {
+                alert("Veuillez sélectionner un client !");
+                return;
+            }
+
+            const data = `montant=${montantInput.value}&duree=${dureeInput.value}&idtypepret=${tp.idtypepret}&idclient=${idclient}&delais=${delaiInput.value}&assurance=${avecAssuranceInput.checked ? 1 : 0}`;
+            ajax("POST", "/prets/add", data, (res) => {
+                if (res.status === "success") {
+                    alert("✅ Prêt enregistré avec succès !");
+                } else {
+                    alert("❌ Erreur : " + (res.message || "Échec enregistrement"));
+                }
+            });
+        }
+
+        window.onload = () => {
+            chargerTypesPret();
+            chargerClients();
+        };
     </script>
 </body>
 
