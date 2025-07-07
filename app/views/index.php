@@ -64,7 +64,6 @@
 
   <script>
     const apiBase = "http://localhost/examen_web_s4/ws";
-
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
       xhr.open(method, apiBase + url, true);
