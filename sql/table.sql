@@ -1,5 +1,5 @@
 CREATE TABLE client (
-    idclient INT,
+    idclient INT AUTO_INCREMENT,
     nom VARCHAR(50),
     prenom VARCHAR(50),
     dtn DATE,
@@ -7,7 +7,7 @@ CREATE TABLE client (
 );
 
 CREATE TABLE typepret (
-    idtypepret INT,
+    idtypepret INT AUTO_INCREMENT,
     nom VARCHAR(50),
     taux_annuel DECIMAL(15, 2),
     montant_min DECIMAL(15, 2),
@@ -17,7 +17,7 @@ CREATE TABLE typepret (
 );
 
 CREATE TABLE pret (
-    idpret INT,
+    idpret INT AUTO_INCREMENT,
     duree INT,
     montant DECIMAL(15, 2),
     idtypepret INT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE pret (
 );
 
 CREATE TABLE operation (
-    idoperation INT,
+    idoperation INT AUTO_INCREMENT,
     mois INT,
     annee INT,
     emprunt_restant DECIMAL(25, 2),
@@ -42,19 +42,19 @@ CREATE TABLE operation (
 );
 
 CREATE TABLE motif (
-    idmotif INT,
+    idmotif INT AUTO_INCREMENT,
     motif VARCHAR(50),
     PRIMARY KEY (idmotif)
 );
 
 CREATE TABLE statut (
-    idstatut INT,
+    idstatut INT AUTO_INCREMENT,
     valeur VARCHAR(50),
     PRIMARY KEY (idstatut)
 );
 
 CREATE TABLE entrant (
-    identrant INT,
+    identrant INT AUTO_INCREMENT,
     montant DECIMAL(25, 2),
     date_ DATE,
     idmotif INT NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE entrant (
 );
 
 CREATE TABLE sortant (
-    idsortant INT,
+    idsortant INT AUTO_INCREMENT,
     date_ DATE,
     montant DECIMAL(25, 2) NOT NULL,
     idmotif INT NOT NULL,
