@@ -27,6 +27,9 @@
             <button onclick="ajouterFond()">Ajouter</button>
         </div>
 
+        <h2>Capital actuel disponible : <span id="capital">...</span> Ar</h2>
+
+
         <p id="message"></p>
 
         <script>
@@ -56,6 +59,7 @@
                                 document.getElementById("message").textContent = response.message;
                                 document.getElementById("montant").value = "";
                                 document.getElementById("date_").value = "";
+                                chargerCapital();
                             } else {
                                 document.getElementById("message").textContent = "Erreur: " + (response.error || "Erreur inconnue");
                             }
@@ -67,6 +71,21 @@
                 };
                 xhr.send(data);
             }
+            function chargerCapital() {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", apiBase + "/capital", true);
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        document.getElementById("capital").textContent = response.capital.toLocaleString();
+                    }
+                };
+                xhr.send();
+            }
+
+            // Appeler la fonction au chargement
+            chargerCapital();
+
         </script>
 
     </body>

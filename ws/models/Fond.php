@@ -27,6 +27,20 @@ class Fond {
             throw $e;
         }
     }
+
+    public static function getSommeMontantEntrant() {
+        $db = getDB();
+        $stmt = $db->query("SELECT SUM(montant) AS total FROM entrant");
+        $result = $stmt->fetch();
+        return (int) ($result['total'] ?? 0);
+    }
+    
+    public static function getSommeMontantSortant() {
+        $db = getDB();
+        $stmt = $db->query("SELECT SUM(montant) AS total FROM sortant");
+        $result = $stmt->fetch();
+        return (int) ($result['total'] ?? 0);
+    }
     
 
 }
