@@ -22,9 +22,7 @@ use flight\net\Router;
 
 $Welcome_Controller = new WelcomeController();
 
-
 $router->get('/', [$Welcome_Controller, 'homeTemplate']);
-
 
 //$router->get('/', \app\controllers\WelcomeController::class.'->home'); 
 

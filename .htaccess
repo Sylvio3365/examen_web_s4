@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Si l'URL est vide (racine), redirige vers public/index.html
+RewriteCond %{REQUEST_URI} ^/?$
+RewriteRule ^$ public/index.html [L]
+
+# Laisser passer les fichiers/dossiers existants
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Sinon, rediriger vers public (utile pour CSS, JS, images, etc.)
+RewriteRule ^(.*)$ public/$1 [L]
