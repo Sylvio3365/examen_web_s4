@@ -18,6 +18,7 @@
     <input type="number" id="montant_min" placeholder="Montant minimum">
     <input type="number" id="montant_max" placeholder="Montant maximum">
     <input type="number" id="duree_max" placeholder="Durée max (mois)">
+    <input type="number" id="taux_assurance" placeholder="taux_assurance">
     <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
   </div>
 
@@ -30,6 +31,7 @@
         <th>Montant min</th>
         <th>Montant max</th>
         <th>Durée max</th>
+        <th>Taux assurance</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -64,6 +66,7 @@
             <td>${t.montant_min}</td>
             <td>${t.montant_max}</td>
             <td>${t.duree_max}</td>
+            <td>${t.taux_assurance}</td>
             <td>
               <button onclick='remplirFormulaire(${JSON.stringify(t)})'>✏️</button>
               <button onclick='supprimerTypePret(${t.idtypepret})'>🗑️</button>
@@ -80,13 +83,15 @@
       const montant_min = document.getElementById("montant_min").value;
       const montant_max = document.getElementById("montant_max").value;
       const duree_max = document.getElementById("duree_max").value;
+      const taux_assurance =document.getElementById("taux_assurance").value;
 
       const data = {
         nom: nom,
         taux_annuel: parseFloat(taux_annuel),
         montant_min: parseFloat(montant_min),
         montant_max: parseFloat(montant_max),
-        duree_max: parseFloat(duree_max)
+        duree_max: parseFloat(duree_max),
+        taux_assurance: parseFloat(taux_assurance)
       };
 
       const xhr = new XMLHttpRequest();
@@ -112,6 +117,7 @@
       document.getElementById("montant_min").value = t.montant_min;
       document.getElementById("montant_max").value = t.montant_max;
       document.getElementById("duree_max").value = t.duree_max;
+      document.getElementById("taux_assurance").value = t.taux_assurance;
     }
 
     function supprimerTypePret(id) {
@@ -129,6 +135,7 @@
       document.getElementById("montant_min").value = "";
       document.getElementById("montant_max").value = "";
       document.getElementById("duree_max").value = "";
+      document.getElementById("taux_assurance").value = "";
     }
 
     chargerTypePrets();

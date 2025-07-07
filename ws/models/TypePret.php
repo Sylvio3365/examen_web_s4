@@ -21,13 +21,14 @@ class TypePret
     public static function create($data)
     {
         $db = getDB();
-        $stmt = $db->prepare("INSERT INTO typepret (nom, taux_annuel, montant_min, montant_max, duree_max) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO typepret (nom, taux_annuel, montant_min, montant_max, duree_max, taux_assurance) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $data->nom, 
             $data->taux_annuel, 
             $data->montant_min, 
             $data->montant_max, 
-            $data->duree_max
+            $data->duree_max,
+            $data->taux_assurance,
         ]);
         return $db->lastInsertId();
     }
@@ -35,13 +36,14 @@ class TypePret
     public static function update($id, $data)
     {
         $db = getDB();
-        $stmt = $db->prepare("UPDATE typepret SET nom = ?, taux_annuel = ?, montant_min = ?, montant_max = ?, duree_max = ? WHERE idtypepret = ? AND deleted_at IS NULL");
+        $stmt = $db->prepare("UPDATE typepret SET nom = ?, taux_annuel = ?, montant_min = ?, montant_max = ?, duree_max = ? , taux_assurance = ? WHERE idtypepret = ? AND deleted_at IS NULL");
         $stmt->execute([
             $data->nom, 
             $data->taux_annuel, 
             $data->montant_min, 
             $data->montant_max, 
             $data->duree_max, 
+            $data->taux_assurance,
             $id
         ]);
     }
