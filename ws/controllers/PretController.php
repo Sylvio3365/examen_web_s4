@@ -40,16 +40,18 @@ class PretController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = (object) [
-                'montant'     => $_POST['montant'] ?? null,
-                'duree'       => $_POST['duree'] ?? null,
-                'idtypepret'  => $_POST['idtypepret'] ?? null,
-                'idclient'    => $_POST['idclient'] ?? null,
-                'delais'      => $_POST['delais'] ?? 0
+                'montant'        => $_POST['montant'] ?? null,
+                'duree'          => $_POST['duree'] ?? null,
+                'idtypepret'     => $_POST['idtypepret'] ?? null,
+                'idclient'       => $_POST['idclient'] ?? null,
+                'delais'         => $_POST['delais'] ?? 0,
+                'misyassurance'  => isset($_POST['assurance']) && $_POST['assurance'] == 1 ? 1 : 0
             ];
+
             try {
-                $id = Pret::create($data);
-                Pret::insertPretEnAttente($id);
-                // Pret::insertIntoRemboursement($id);
+                $id = Pret::create($data); // insert du prêt
+                Pret::insertPretEnAttente($id); // statut d'attente
+                Pret::insertIntoRemboursement($id); // échéancier
                 Flight::json([
                     'status' => 'success',
                     'id' => $id

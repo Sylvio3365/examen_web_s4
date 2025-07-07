@@ -191,6 +191,7 @@
             }
 
             const data = `montant=${montantInput.value}&duree=${dureeInput.value}&idtypepret=${tp.idtypepret}&idclient=${idclient}&delais=${delaiInput.value}&assurance=${avecAssuranceInput.checked ? 1 : 0}`;
+
             ajax("POST", "/prets/add", data, (res) => {
                 if (res.status === "success") {
                     alert("✅ Prêt enregistré avec succès !");

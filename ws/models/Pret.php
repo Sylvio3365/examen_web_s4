@@ -16,14 +16,17 @@ class Pret
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
+
         $montant = $pret['montant'];
         $duree = $pret['duree'];
         $taux_annuel = $pret['taux_annuel'];
         $taux_mensuel = $taux_annuel / 100 / 12;
-        $assurance_taux = $pret['taux_assurance'] ?? 0;
+        $delais = $pret['delais'] ?? 0;
+        $misyassurance = $pret['misyassurance'];
+
+        $assurance_taux = ($misyassurance == 1) ? ($pret['taux_assurance'] ?? 0) : 0;
         $assurance_totale = $montant * $assurance_taux / 100;
         $assurance_mensuelle = $assurance_totale / $duree;
-        $delais = $pret['delais'] ?? 0;
 
         $capitalRestant = $montant;
         $mensualite_base = Utils::pmt($taux_mensuel, $duree, $montant);
@@ -38,16 +41,12 @@ class Pret
             $mois = ($mois_actuel + $index - 1) % 12 + 1;
             $annee = $annee_actuelle + floor(($mois_actuel + $index - 1) / 12);
 
-            $interet = 0;
-            $amortissement = 0;
-            $echeance = 0;
-
             if ($i > $delais) {
-
                 $interet = $capitalRestant * $taux_mensuel;
                 $amortissement = $mensualite_base - $interet;
-                if ($capitalRestant < 0) $capitalRestant = 0;
                 $echeance = $mensualite_base + $assurance_mensuelle;
+                $valeur_nette = $capitalRestant - $amortissement;
+
                 $tableau[] = [
                     'mois' => $mois,
                     'annee' => $annee,
@@ -56,16 +55,23 @@ class Pret
                     'assurance' => round($assurance_mensuelle, 2),
                     'amortissement' => round($amortissement, 2),
                     'echeance' => round($echeance, 2),
-                    'valeur_nette' => round($capitalRestant - $amortissement)
+                    'valeur_nette' => round(max($valeur_nette, 0), 2),
+                    'idpret' => $idpret
                 ];
+
                 $capitalRestant -= $amortissement;
+                if ($capitalRestant < 0) $capitalRestant = 0;
             }
         }
+
+        // Insérer chaque ligne dans la base
+        foreach ($tableau as $ligne) {
+            Remboursement::insert($ligne);
+        }
+
         return $tableau;
-        // foreach ($tableau as $ligne) {
-        //     Remboursement::insert($ligne);
-        // }
     }
+
 
     // public static function insertIntoRemboursement($idpret)
     // {
@@ -143,13 +149,17 @@ class Pret
     public static function create($data)
     {
         $db = getDB();
-        $stmt = $db->prepare("INSERT INTO pret (duree, montant, idtypepret, idclient, delais) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("
+        INSERT INTO pret (duree, montant, idtypepret, idclient, delais, misyassurance)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
         $stmt->execute([
             $data->duree,
             $data->montant,
             $data->idtypepret,
             $data->idclient,
-            $data->delais
+            $data->delais,
+            $data->misyassurance // ← c’est ça qu’il manquait
         ]);
         return $db->lastInsertId();
     }

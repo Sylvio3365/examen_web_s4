@@ -115,6 +115,8 @@ ALTER TABLE typepret ADD COLUMN taux_assurance FLOAT DEFAULT 0;
 
 ALTER TABLE remboursement ADD COLUMN assurance FLOAT DEFAULT 0;
 
+ALTER TABLE pret ADD COLUMN misyassurance FLOAT DEFAULT 0;
+
 ALTER TABLE remboursement MODIFY COLUMN valeur_nette FLOAT DEFAULT 0;
 
 -- Insertion dans Statut
