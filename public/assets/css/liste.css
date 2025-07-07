@@ -1,0 +1,10 @@
+.actions {
+    display: flex;
+    gap: 30px; /* Espace entre les icônes */
+}
+
+.actions img {
+    width: 40px; /* Réduit la taille des icônes */
+    height: auto;
+    cursor: pointer; /* Optionnel : montre que l'icône est cliquable */
+}
