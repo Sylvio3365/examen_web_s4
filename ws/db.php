@@ -1,7 +1,7 @@
 <?php
 function getDB() {
     $host = 'localhost';
-    $dbname = 'webMSD';
+    $dbname = 'webSMD';
     $username = 'root';
     $password = '';
 
