@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../models/Etudiant.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 require_once  __DIR__ . '/../models/Pret.php';
-
+require_once  __DIR__ . '/../models/Remboursement.php';
 class PretController
 {
     public static function goIndex()
@@ -33,6 +33,11 @@ class PretController
         ]);
     }
 
+    // public static function addRemboursement()
+    // {
+    //     Flight::json(Pret::insertIntoRemboursement());
+    // }
+
     public static function addPret()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -46,6 +51,7 @@ class PretController
             try {
                 $id = Pret::create($data);
                 Pret::insertPretEnAttente($id);
+                // Pret::insertIntoRemboursement($id);
                 Flight::json([
                     'status' => 'success',
                     'id' => $id
