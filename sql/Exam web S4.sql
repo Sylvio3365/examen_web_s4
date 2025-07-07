@@ -1,56 +1,52 @@
-CREATE TABLE `admin` (
-  `id` integer PRIMARY KEY,
-  `username` varchar(255),
-  `mdp` varchar(255)
+CREATE TABLE admin (
+  id INTEGER PRIMARY KEY,
+  username VARCHAR(255),
+  mdp VARCHAR(255)
 );
 
-CREATE TABLE `fonds` (
-  `id` integer PRIMARY KEY,
-  `montant` float,
-  `date_ajout` datetime
+CREATE TABLE fonds (
+  id INTEGER PRIMARY KEY,
+  montant FLOAT,
+  date_ajout DATETIME
 );
 
-CREATE TABLE `type_pret` (
-  `id` integer PRIMARY KEY,
-  `nom` varchar(255),
-  `taux_interet` float,
-  `duree_mois` integer
+CREATE TABLE type_pret (
+  id INTEGER PRIMARY KEY,
+  nom VARCHAR(255),
+  taux_interet FLOAT,
+  duree_mois INTEGER
 );
 
-CREATE TABLE `clients` (
-  `id` integer PRIMARY KEY,
-  `nom` varchar(255),
-  `email` varchar(255),
-  `cin` varchar(255),
-  `date_inscription` datetime
+CREATE TABLE clients (
+  id INTEGER PRIMARY KEY,
+  nom VARCHAR(255),
+  email VARCHAR(255),
+  cin VARCHAR(255),
+  date_inscription DATETIME
 );
 
-CREATE TABLE `prets` (
-  `id` integer PRIMARY KEY,
-  `client_id` integer,
-  `type_pret_id` integer,
-  `montant_emprunte` float,
-  `interet_total` float,
-  `date_emprunt` datetime,
-  `statut` integer
+CREATE TABLE statut_prets (
+  id INTEGER PRIMARY KEY,
+  statut VARCHAR(255)
 );
 
-CREATE TABLE `remboursements` (
-  `id` integer PRIMARY KEY,
-  `pret_id` integer,
-  `montant` float,
-  `date_remboursement` datetime
+CREATE TABLE prets (
+  id INTEGER PRIMARY KEY,
+  client_id INTEGER,
+  type_pret_id INTEGER,
+  montant_emprunte FLOAT,
+  interet_total FLOAT,
+  date_emprunt DATETIME,
+  statut INTEGER,
+  FOREIGN KEY (client_id) REFERENCES clients(id),
+  FOREIGN KEY (type_pret_id) REFERENCES type_pret(id),
+  FOREIGN KEY (statut) REFERENCES statut_prets(id)
 );
 
-CREATE TABLE `statut_prets` (
-  `id` integer,
-  `statut` varchar(255)
+CREATE TABLE remboursements (
+  id INTEGER PRIMARY KEY,
+  pret_id INTEGER,
+  montant FLOAT,
+  date_remboursement DATETIME,
+  FOREIGN KEY (pret_id) REFERENCES prets(id)
 );
-
-ALTER TABLE `prets` ADD FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`);
-
-ALTER TABLE `prets` ADD FOREIGN KEY (`type_pret_id`) REFERENCES `type_pret` (`id`);
-
-ALTER TABLE `prets` ADD FOREIGN KEY (`statut`) REFERENCES `statut_prets` (`id`);
-
-ALTER TABLE `remboursements` ADD FOREIGN KEY (`pret_id`) REFERENCES `prets` (`id`);
