@@ -28,10 +28,9 @@ class TypePretController
         Flight::json(['message' => 'Type de prêt ajouté', 'id' => $id]);
     }
 
-    public static function update($id)
-    {
+    public static function update($id) {
         $data = Flight::request()->data;
-        TypePret::update($id, $data);
+        TypePret::update($id, (object)$data);
         Flight::json(['message' => 'Type de prêt modifié']);
     }
 

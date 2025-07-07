@@ -73,7 +73,6 @@
         });
       });
     }
-
     function ajouterOuModifier() {
       const idtypepret = document.getElementById("idtypepret").value;
       const nom = document.getElementById("nom").value;
@@ -82,19 +81,28 @@
       const montant_max = document.getElementById("montant_max").value;
       const duree_max = document.getElementById("duree_max").value;
 
-      const data = `nom=${encodeURIComponent(nom)}&taux_annuel=${taux_annuel}&montant_min=${montant_min}&montant_max=${montant_max}&duree_max=${duree_max}`;
+      const data = {
+        nom: nom,
+        taux_annuel: parseFloat(taux_annuel),
+        montant_min: parseFloat(montant_min),
+        montant_max: parseFloat(montant_max),
+        duree_max: parseFloat(duree_max)
+      };
 
-      if (idtypepret) {
-        ajax("PUT", `/typeprets/${idtypepret}`, data, () => {
-          resetForm();
-          chargerTypePrets();
-        });
-      } else {
-        ajax("POST", "/typeprets", data, () => {
-          resetForm();
-          chargerTypePrets();
-        });
-      }
+      const xhr = new XMLHttpRequest();
+      xhr.open(idtypepret ? "PUT" : "POST", apiBase + `/typeprets/${idtypepret || ''}`, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resetForm();
+            chargerTypePrets();
+          } else {
+            console.error("Erreur:", xhr.status, xhr.statusText);
+          }
+        }
+      };
+      xhr.send(JSON.stringify(data));
     }
 
     function remplirFormulaire(t) {
