@@ -2,180 +2,138 @@
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulation de prêt</title>
-  <link rel="stylesheet" href="public/css/style_pret.css" />
+  <meta charset="UTF-8">
+  <title>Gestion des types de prêt</title>
+  <link rel="stylesheet" href="public/css/style.css">
 </head>
 
 <body>
-  <div class="container">
-    <h2>Simulez votre prêt</h2>
 
-    <label for="type_pret">Type de prêt</label>
-    <select id="type_pret"></select>
+  <h1>Gestion des types de prêt</h1>
 
-    <label for="montant">Montant (en Ar)</label>
-    <input type="number" id="montant" step="50" />
-    <input type="range" id="amountRange" step="50" />
-
-    <label for="duree">Durée (mois)</label>
-    <input type="number" id="duree" />
-    <input type="range" id="dureeRange" />
-
-    <label for="delai">Payer après (mois)</label>
-    <input type="number" id="delai" value="0" min="0" max="12" style="width: 60px;" />
-
-    <label for="idclient">Client</label>
-    <select id="idclient"></select>
-
-    <div class="result-box" id="resultat">
-      Mensualité : <span id="echeance">0</span> Ar
-    </div>
-
-    <button class="simulate-btn" onclick="calculer()">SIMULER UN PRÊT</button>
-    <button class="simulate-btn" onclick="enregistrerPret()">ENREGISTRER LE PRÊT</button>
+  <div>
+    <input type="hidden" id="idtypepret">
+    <input type="text" id="nom" placeholder="Nom du type">
+    <input type="number" id="taux_annuel" placeholder="Taux annuel (%)" step="0.01">
+    <input type="number" id="montant_min" placeholder="Montant minimum">
+    <input type="number" id="montant_max" placeholder="Montant maximum">
+    <input type="number" id="duree_max" placeholder="Durée max (mois)">
+    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
   </div>
+
+  <table id="table-typeprets">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Taux annuel</th>
+        <th>Montant min</th>
+        <th>Montant max</th>
+        <th>Durée max</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
     const apiBase = "http://localhost/examen_web_s4/ws";
-    let typePrets = [];
-
-    const typeSelect = document.getElementById("type_pret");
-    const montantInput = document.getElementById("montant");
-    const montantRange = document.getElementById("amountRange");
-    const dureeInput = document.getElementById("duree");
-    const dureeRange = document.getElementById("dureeRange");
-    const delaiInput = document.getElementById("delai");
-    const echeanceAffiche = document.getElementById("echeance");
-    const idClientSelect = document.getElementById("idclient");
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
       xhr.open(method, apiBase + url, true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          console.log("Réponse brute serveur :", xhr.responseText); // DEBUG
-          if (xhr.status === 200) {
-            try {
-              const res = JSON.parse(xhr.responseText);
-              callback(res);
-            } catch (e) {
-              alert("Erreur de réponse JSON. Voir console.");
-              console.error(e);
-            }
-          } else {
-            alert("Erreur serveur : " + xhr.status);
-          }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
         }
       };
       xhr.send(data);
     }
 
-    function chargerTypesPret() {
-      ajax("GET", "/typeprets", null, (response) => {
-        typePrets = response;
-        typeSelect.innerHTML = "";
-
-        typePrets.forEach((tp, index) => {
-          const opt = document.createElement("option");
-          opt.value = index;
-          opt.textContent = `${tp.nom} - ${tp.taux_annuel}%`;
-          typeSelect.appendChild(opt);
-        });
-
-        typeSelect.addEventListener("change", appliquerInfosTypePret);
-        appliquerInfosTypePret();
-      });
-    }
-
-    function chargerClients() {
-      ajax("GET", "/clients", null, (clients) => {
-        idClientSelect.innerHTML = "";
-        clients.forEach(client => {
-          const opt = document.createElement("option");
-          opt.value = client.idclient;
-          opt.textContent = `${client.nom} ${client.prenom}`;
-          idClientSelect.appendChild(opt);
+    function chargerTypePrets() {
+      ajax("GET", "/typeprets", null, (data) => {
+        const tbody = document.querySelector("#table-typeprets tbody");
+        tbody.innerHTML = "";
+        data.forEach(t => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${t.idtypepret}</td>
+            <td>${t.nom}</td>
+            <td>${t.taux_annuel}</td>
+            <td>${t.montant_min}</td>
+            <td>${t.montant_max}</td>
+            <td>${t.duree_max}</td>
+            <td>
+              <button onclick='remplirFormulaire(${JSON.stringify(t)})'>✏️</button>
+              <button onclick='supprimerTypePret(${t.idtypepret})'>🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
         });
       });
     }
+    function ajouterOuModifier() {
+      const idtypepret = document.getElementById("idtypepret").value;
+      const nom = document.getElementById("nom").value;
+      const taux_annuel = document.getElementById("taux_annuel").value;
+      const montant_min = document.getElementById("montant_min").value;
+      const montant_max = document.getElementById("montant_max").value;
+      const duree_max = document.getElementById("duree_max").value;
 
-    function appliquerInfosTypePret() {
-      const tp = typePrets[typeSelect.value];
-      if (!tp) return;
+      const data = {
+        nom: nom,
+        taux_annuel: parseFloat(taux_annuel),
+        montant_min: parseFloat(montant_min),
+        montant_max: parseFloat(montant_max),
+        duree_max: parseFloat(duree_max)
+      };
 
-      const min = parseFloat(tp.montant_min);
-      const max = parseFloat(tp.montant_max);
-      const dureeMax = parseInt(tp.duree_max);
-
-      montantInput.min = montantRange.min = min;
-      montantInput.max = montantRange.max = max;
-      montantInput.value = montantRange.value = min;
-
-      dureeInput.min = dureeRange.min = 1;
-      dureeInput.max = dureeRange.max = dureeMax;
-      dureeInput.value = dureeRange.value = dureeMax;
-
-      calculer();
-    }
-
-    montantRange.addEventListener("input", () => {
-      montantInput.value = montantRange.value;
-      calculer();
-    });
-    montantInput.addEventListener("input", () => {
-      montantRange.value = montantInput.value;
-      calculer();
-    });
-    dureeRange.addEventListener("input", () => {
-      dureeInput.value = dureeRange.value;
-      calculer();
-    });
-    dureeInput.addEventListener("input", () => {
-      dureeRange.value = dureeInput.value;
-      calculer();
-    });
-
-    function calculer() {
-      const tp = typePrets[typeSelect.value];
-      const montant = parseFloat(montantInput.value);
-      const duree = parseInt(dureeInput.value);
-      const tauxMensuel = parseFloat(tp.taux_annuel) / 100 / 12;
-
-      if (isNaN(montant) || isNaN(duree) || duree <= 0) {
-        echeanceAffiche.textContent = "0";
-        return;
-      }
-
-      let mensualite = 0;
-      if (tauxMensuel === 0) {
-        mensualite = montant / duree;
-      } else {
-        mensualite = (montant * tauxMensuel) / (1 - Math.pow(1 + tauxMensuel, -duree));
-      }
-
-      echeanceAffiche.textContent = Math.round(mensualite).toLocaleString("fr-FR");
-    }
-
-    function enregistrerPret() {
-      const tp = typePrets[typeSelect.value];
-      const data = `montant=${montantInput.value}&duree=${dureeInput.value}&idtypepret=${tp.idtypepret}&idclient=${idClientSelect.value}&delais=${delaiInput.value}`;
-      ajax("POST", "/prets/add", data, (res) => {
-        if (res.status === "success") {
-          alert("Prêt enregistré avec ID : " + res.id);
-        } else {
-          alert("Erreur : " + (res.message || "Échec enregistrement"));
+      const xhr = new XMLHttpRequest();
+      xhr.open(idtypepret ? "PUT" : "POST", apiBase + `/typeprets/${idtypepret || ''}`, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resetForm();
+            chargerTypePrets();
+          } else {
+            console.error("Erreur:", xhr.status, xhr.statusText);
+          }
         }
-      });
+      };
+      xhr.send(JSON.stringify(data));
     }
 
-    window.onload = () => {
-      chargerTypesPret();
-      chargerClients();
-    };
+    function remplirFormulaire(t) {
+      document.getElementById("idtypepret").value = t.idtypepret;
+      document.getElementById("nom").value = t.nom;
+      document.getElementById("taux_annuel").value = t.taux_annuel;
+      document.getElementById("montant_min").value = t.montant_min;
+      document.getElementById("montant_max").value = t.montant_max;
+      document.getElementById("duree_max").value = t.duree_max;
+    }
+
+    function supprimerTypePret(id) {
+      if (confirm("Supprimer ce type de prêt ?")) {
+        ajax("DELETE", `/typeprets/${id}`, null, () => {
+          chargerTypePrets();
+        });
+      }
+    }
+
+    function resetForm() {
+      document.getElementById("idtypepret").value = "";
+      document.getElementById("nom").value = "";
+      document.getElementById("taux_annuel").value = "";
+      document.getElementById("montant_min").value = "";
+      document.getElementById("montant_max").value = "";
+      document.getElementById("duree_max").value = "";
+    }
+
+    chargerTypePrets();
   </script>
+
 </body>
 
 </html>
