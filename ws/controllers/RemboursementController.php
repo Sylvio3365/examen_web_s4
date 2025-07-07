@@ -4,7 +4,7 @@ require_once  __DIR__ . '/../models/Remboursement.php';
 
 class RemboursementController
 {
-    public static function formulaireFond()
+    public static function liste()
     {
         Flight::render('remboursement/index');
     }
@@ -20,5 +20,10 @@ class RemboursementController
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public static function setStatus($id)
+    {
+        Remboursement::insertStatut($id, 2);
     }
 }

@@ -33,3 +33,5 @@ Flight::route('GET /clients', ['ClientController', 'getAll']);
 Flight::route('GET /teste', ['PretController', 'addRemboursement']);
 
 Flight::route('GET /remboursements/attente', ['RemboursementController', 'getEnAttente']);
+Flight::route('GET /remboursements/attente/liste', ['RemboursementController', 'liste']);
+Flight::route('POST /remboursements/@id/statut', ['RemboursementController', 'setStatus']);
