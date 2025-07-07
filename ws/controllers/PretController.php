@@ -43,17 +43,14 @@ class PretController
                 'idclient'    => $_POST['idclient'] ?? null,
                 'delais'      => $_POST['delais'] ?? 0
             ];
-
             try {
                 $id = Pret::create($data);
-
-                // ✅ Retour JSON correct
+                Pret::insertPretEnAttente($id);
                 Flight::json([
                     'status' => 'success',
                     'id' => $id
                 ]);
             } catch (Exception $e) {
-                // ✅ Retour erreur JSON correcte
                 Flight::json([
                     'status' => 'error',
                     'message' => $e->getMessage()

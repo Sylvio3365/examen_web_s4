@@ -32,6 +32,19 @@ class Pret
         return $db->lastInsertId();
     }
 
+    public static function insertStatut($idpret, $idstatut)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("INSERT INTO pret_statut (idpret, idstatut, date_modif) VALUES (?, ?, CURDATE())");
+        $stmt->execute([$idpret, $idstatut]);
+    }
+
+    public static function insertPretEnAttente($idpret)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("INSERT INTO pret_statut (idpret, idstatut, date_modif) VALUES (?, ?, CURDATE())");
+        $stmt->execute([$idpret, 1]);
+    }
 
     public static function update($id, $data)
     {
