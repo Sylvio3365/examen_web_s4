@@ -122,3 +122,4 @@ INSERT INTO
 VALUES ('Prêt'),
     ('Ajout de fonds'),
     ('Remboursement');
+
