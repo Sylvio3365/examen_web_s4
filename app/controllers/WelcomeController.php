@@ -11,10 +11,11 @@ class WelcomeController {
 
 	}
 
-    //pour tester le template
+    // Affiche l'interface de gestion d'étudiants
     public function homeTemplate() {
         $data = ['page' => "home"];
-        Flight::render('welcome', $data);
+        // On charge la vue principale qui communique avec le web service
+        Flight::render('index', $data);
     }
 
 }
