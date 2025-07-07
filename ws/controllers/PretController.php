@@ -10,22 +10,21 @@ class PretController
         Flight::render('pret/index');
     }
 
-    public function interets() {
-        $pretModel = new Pret();
+    public static function goInteret() {
+        Flight::render('pret/interets');
+    }
+
+    public static function interets() {
+        $dateDebut = Flight::request()->data->date_debut ?? '';
+        $dateFin = Flight::request()->data->date_fin ?? '';
         
-        // Valeurs par défaut (derniers 12 mois)
-        $dateDebut = date('Y-m-d', strtotime('-12 months'));
-        $dateFin = date('Y-m-d');
-        
-        // Si le formulaire est soumis
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $dateDebut = $_POST['date_debut'] ?? $dateDebut;
-            $dateFin = $_POST['date_fin'] ?? $dateFin;
+        if (!empty($dateDebut) && !empty($dateFin)) {
+            $interets = Pret::getInteretsParPeriode($dateDebut, $dateFin);
+        } else {
+            $interets = Pret::getAllInterets();
         }
         
-        $interets = $pretModel->getInteretsParPeriode($dateDebut, $dateFin);
-        
-        Flight::render('interets', [
+        Flight::json([
             'interets' => $interets,
             'dateDebut' => $dateDebut,
             'dateFin' => $dateFin

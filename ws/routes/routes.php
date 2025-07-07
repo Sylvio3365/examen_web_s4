@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../controllers/EtudiantController.php';
 require_once __DIR__ . '/../controllers/TypePretController.php';
 require_once __DIR__ . '/../controllers/PretController.php';
-
+        
 Flight::route('GET /typeprets', ['TypePretController', 'getAll']);
 Flight::route('GET /typeprets/@id', ['TypePretController', 'getById']);
 Flight::route('POST /typeprets', ['TypePretController', 'create']);
@@ -11,4 +11,6 @@ Flight::route('DELETE /typeprets/@id', ['TypePretController', 'delete']);
 Flight::route('GET /', ['TypePretController', 'goIndex']);
 
 Flight::route('GET /pret', ['PretController', 'goIndex']);
-Flight::route('GET /interets', ['PretController', 'interets']);
+
+Flight::route('GET /interets', ['PretController', 'goInteret']);
+Flight::route('POST /api/interets', ['PretController', 'interets']); 
