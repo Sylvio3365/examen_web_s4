@@ -22,6 +22,7 @@ CREATE TABLE pret (
     montant DECIMAL(15, 2),
     idtypepret INT NOT NULL,
     idclient INT NOT NULL,
+    delais INT DEFAULT 0,
     PRIMARY KEY (idpret),
     FOREIGN KEY (idtypepret) REFERENCES typepret (idtypepret),
     FOREIGN KEY (idclient) REFERENCES client (idclient)
