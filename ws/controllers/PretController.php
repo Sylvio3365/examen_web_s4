@@ -42,6 +42,10 @@ class PretController
     // {
     //     Flight::json(Pret::insertIntoRemboursement());
     // }
+    public static function addRemboursement()
+    {
+        Flight::json(Pret::insertIntoRemboursement(1));
+    }
 
     public static function addPret()
     {
@@ -53,10 +57,11 @@ class PretController
                 'idclient'    => $_POST['idclient'] ?? null,
                 'delais'      => $_POST['delais'] ?? 0
             ];
+
             try {
-                $id = Pret::create($data);
-                Pret::insertPretEnAttente($id);
-                // Pret::insertIntoRemboursement($id);
+                $id = Pret::create($data); // insert du prêt
+                Pret::insertPretEnAttente($id); // statut d'attente
+                Pret::insertIntoRemboursement($id); // échéancier
                 Flight::json([
                     'status' => 'success',
                     'id' => $id
