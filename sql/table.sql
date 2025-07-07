@@ -94,7 +94,7 @@ CREATE TABLE remboursement_statut (
     idremboursement INT,
     idstatut INT,
     date_modif DATE,
-    PRIMARY KEY ( idremboursement_statut),
+    PRIMARY KEY (idremboursement_statut),
     FOREIGN KEY (idremboursement) REFERENCES remboursement (idremboursement),
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );

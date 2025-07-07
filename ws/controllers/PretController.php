@@ -33,7 +33,7 @@ class PretController
 
     public static function addRemboursement()
     {
-        Flight::json(Pret::insertIntoRemboursement(10));
+        Flight::json(Pret::insertIntoRemboursement(1));
     }
 
     public static function addPret()
