@@ -4,6 +4,7 @@ CREATE DATABASE webSMD;
 
 USE webSMD;
 
+-- Table Client
 CREATE TABLE client (
     idclient INT AUTO_INCREMENT,
     nom VARCHAR(50),
@@ -12,6 +13,7 @@ CREATE TABLE client (
     PRIMARY KEY (idclient)
 );
 
+-- Table Type de prêt
 CREATE TABLE typepret (
     idtypepret INT AUTO_INCREMENT,
     nom VARCHAR(50),
@@ -22,6 +24,7 @@ CREATE TABLE typepret (
     PRIMARY KEY (idtypepret)
 );
 
+-- Table Prêt
 CREATE TABLE pret (
     idpret INT AUTO_INCREMENT,
     duree INT,
@@ -34,6 +37,7 @@ CREATE TABLE pret (
     FOREIGN KEY (idclient) REFERENCES client (idclient)
 );
 
+-- Table Remboursement (avec correction du nom de clé primaire)
 CREATE TABLE remboursement (
     idremboursement INT AUTO_INCREMENT,
     mois INT,
@@ -44,22 +48,25 @@ CREATE TABLE remboursement (
     echeance DECIMAL(15, 2) NOT NULL,
     valeur_nette VARCHAR(50),
     idpret INT NOT NULL,
-    PRIMARY KEY (idoperation),
+    PRIMARY KEY (idremboursement),
     FOREIGN KEY (idpret) REFERENCES pret (idpret)
 );
 
+-- Table Motif
 CREATE TABLE motif (
     idmotif INT AUTO_INCREMENT,
     motif VARCHAR(50),
     PRIMARY KEY (idmotif)
 );
 
+-- Table Statut
 CREATE TABLE statut (
     idstatut INT AUTO_INCREMENT,
     valeur VARCHAR(50),
     PRIMARY KEY (idstatut)
 );
 
+-- Table Entrant
 CREATE TABLE entrant (
     identrant INT AUTO_INCREMENT,
     montant DECIMAL(25, 2),
@@ -69,6 +76,7 @@ CREATE TABLE entrant (
     FOREIGN KEY (idmotif) REFERENCES motif (idmotif)
 );
 
+-- Table Sortant
 CREATE TABLE sortant (
     idsortant INT AUTO_INCREMENT,
     date_ DATE,
@@ -81,6 +89,7 @@ CREATE TABLE sortant (
     FOREIGN KEY (idpret) REFERENCES pret (idpret)
 );
 
+-- Table Prêt_statut
 CREATE TABLE pret_statut (
     idpret INT,
     idstatut INT,
@@ -90,21 +99,24 @@ CREATE TABLE pret_statut (
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );
 
-CREATE TABLE operation_statut (
-    idoperation INT,
+-- Table Remboursement_statut
+CREATE TABLE remboursement_statut (
+    idremboursement INT,
     idstatut INT,
     date_modif DATE,
-    PRIMARY KEY (idoperation, idstatut),
-    FOREIGN KEY (idoperation) REFERENCES operation (idoperation),
+    PRIMARY KEY (idremboursement, idstatut),
+    FOREIGN KEY (idremboursement) REFERENCES remboursement (idremboursement),
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );
 
+-- Insertion dans Statut
 INSERT INTO
     statut (valeur)
 VALUES ('En attente'),
     ('Validé'),
     ('Annulé');
 
+-- Insertion dans Motif
 INSERT INTO
     motif (motif)
 VALUES ('Prêt'),
