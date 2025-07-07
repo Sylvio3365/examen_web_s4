@@ -8,8 +8,8 @@ class Remboursement
     {
         $db = getDB();
         $stmt = $db->prepare("INSERT INTO remboursement (
-            mois, annee, emprunt_restant, interet_mensuel, assurance, amortissement, echeance, valeur_nette, idpret
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        mois, annee, emprunt_restant, interet_mensuel, assurance, amortissement, echeance, valeur_nette, idpret
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $stmt->execute([
             $data['mois'],
@@ -22,6 +22,7 @@ class Remboursement
             $data['valeur_nette'],
             $data['idpret']
         ]);
+        return $db->lastInsertId();
     }
 
     public static function insertStatut($idremboursement, $idstatut)

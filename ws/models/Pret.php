@@ -64,79 +64,13 @@ class Pret
             }
         }
 
-        // Insérer chaque ligne dans la base
         foreach ($tableau as $ligne) {
-            Remboursement::insert($ligne);
+            $id = Remboursement::insert($ligne);
+            Remboursement::insertStatut($id, 1);
         }
 
         return $tableau;
     }
-
-
-    // public static function insertIntoRemboursement($idpret)
-    // {
-    //     $db = getDB();
-    //     $pret = Pret::getById($idpret);
-
-    //     if (!$pret) {
-    //         throw new Exception("Prêt introuvable !");
-    //     }
-
-    //     $montant = $pret['montant'];
-    //     $duree = $pret['duree'];
-    //     $taux_annuel = $pret['taux_annuel'];
-    //     $taux_mensuel = $taux_annuel / 100 / 12;
-    //     $assurance_taux = $pret['taux_assurance'] ?? 0;
-    //     $assurance_totale = $montant * $assurance_taux / 100;
-    //     $assurance_mensuelle = $assurance_totale / $duree;
-    //     $delais = $pret['delais'] ?? 0;
-
-    //     $capitalRestant = $montant;
-
-    //     $mensualite_base = Utils::pmt($taux_mensuel, $duree, $montant);
-
-    //     $mois_actuel = (int)date('n');
-    //     $annee_actuelle = (int)date('Y');
-
-    //     // Boucle sur toute la période : délai + durée
-    //     for ($i = 1; $i <= ($delais + $duree); $i++) {
-    //         $index = $i - 1;
-    //         $mois = ($mois_actuel + $index - 1) % 12 + 1;
-    //         $annee = $annee_actuelle + floor(($mois_actuel + $index - 1) / 12);
-
-    //         // Initialisation
-    //         $interet = 0;
-    //         $amortissement = 0;
-    //         $echeance = 0;
-
-    //         if ($i <= $delais) {
-    //             // Pendant le délai : pas d’amortissement, ni d’intérêt
-    //             $echeance = $assurance_mensuelle;
-    //         } else {
-    //             // Après délai, commencer le remboursement
-    //             $interet = $capitalRestant * $taux_mensuel;
-    //             $amortissement = $mensualite_base - $interet;
-    //             $capitalRestant -= $amortissement;
-
-    //             // Protection contre dépassement arrondi
-    //             if ($capitalRestant < 0) $capitalRestant = 0;
-
-    //             $echeance = $mensualite_base + $assurance_mensuelle;
-    //         }
-
-    //         Remboursement::insert([
-    //             'mois' => $mois,
-    //             'annee' => $annee,
-    //             'emprunt_restant' => round($capitalRestant, 2),
-    //             'interet_mensuel' => round($interet, 2),
-    //             'assurance' => round($assurance_mensuelle, 2),
-    //             'amortissement' => round($amortissement, 2),
-    //             'echeance' => round($echeance, 2),
-    //             'valeur_nette' => number_format(max($capitalRestant, 0), 2, '.', ' '),
-    //             'idpret' => $idpret
-    //         ]);
-    //     }
-    // }
 
     public static function getById($id)
     {
