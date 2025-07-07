@@ -7,16 +7,17 @@
   <link rel="stylesheet" href="public/css/style.css">
 </head>
 
-
 <body>
 
   <h1>Gestion des types de prêt</h1>
 
   <div>
-    <input type="hidden" id="id">
+    <input type="hidden" id="idtypepret">
     <input type="text" id="nom" placeholder="Nom du type">
-    <input type="number" id="taux_interet" placeholder="Taux d’intérêt (%)" step="0.01">
-    <input type="number" id="duree_mois" placeholder="Durée (mois)">
+    <input type="number" id="taux_annuel" placeholder="Taux annuel (%)" step="0.01">
+    <input type="number" id="montant_min" placeholder="Montant minimum">
+    <input type="number" id="montant_max" placeholder="Montant maximum">
+    <input type="number" id="duree_max" placeholder="Durée max (mois)">
     <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
   </div>
 
@@ -25,8 +26,10 @@
       <tr>
         <th>ID</th>
         <th>Nom</th>
-        <th>Taux d’intérêt</th>
-        <th>Durée (mois)</th>
+        <th>Taux annuel</th>
+        <th>Montant min</th>
+        <th>Montant max</th>
+        <th>Durée max</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -55,13 +58,15 @@
         data.forEach(t => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${t.id}</td>
+            <td>${t.idtypepret}</td>
             <td>${t.nom}</td>
-            <td>${t.taux_interet}</td>
-            <td>${t.duree_mois}</td>
+            <td>${t.taux_annuel}</td>
+            <td>${t.montant_min}</td>
+            <td>${t.montant_max}</td>
+            <td>${t.duree_max}</td>
             <td>
               <button onclick='remplirFormulaire(${JSON.stringify(t)})'>✏️</button>
-              <button onclick='supprimerTypePret(${t.id})'>🗑️</button>
+              <button onclick='supprimerTypePret(${t.idtypepret})'>🗑️</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -70,15 +75,17 @@
     }
 
     function ajouterOuModifier() {
-      const id = document.getElementById("id").value;
+      const idtypepret = document.getElementById("idtypepret").value;
       const nom = document.getElementById("nom").value;
-      const taux_interet = document.getElementById("taux_interet").value;
-      const duree_mois = document.getElementById("duree_mois").value;
+      const taux_annuel = document.getElementById("taux_annuel").value;
+      const montant_min = document.getElementById("montant_min").value;
+      const montant_max = document.getElementById("montant_max").value;
+      const duree_max = document.getElementById("duree_max").value;
 
-      const data = `nom=${encodeURIComponent(nom)}&taux_interet=${taux_interet}&duree_mois=${duree_mois}`;
+      const data = `nom=${encodeURIComponent(nom)}&taux_annuel=${taux_annuel}&montant_min=${montant_min}&montant_max=${montant_max}&duree_max=${duree_max}`;
 
-      if (id) {
-        ajax("PUT", `/typeprets/${id}`, data, () => {
+      if (idtypepret) {
+        ajax("PUT", `/typeprets/${idtypepret}`, data, () => {
           resetForm();
           chargerTypePrets();
         });
@@ -91,10 +98,12 @@
     }
 
     function remplirFormulaire(t) {
-      document.getElementById("id").value = t.id;
+      document.getElementById("idtypepret").value = t.idtypepret;
       document.getElementById("nom").value = t.nom;
-      document.getElementById("taux_interet").value = t.taux_interet;
-      document.getElementById("duree_mois").value = t.duree_mois;
+      document.getElementById("taux_annuel").value = t.taux_annuel;
+      document.getElementById("montant_min").value = t.montant_min;
+      document.getElementById("montant_max").value = t.montant_max;
+      document.getElementById("duree_max").value = t.duree_max;
     }
 
     function supprimerTypePret(id) {
@@ -106,10 +115,12 @@
     }
 
     function resetForm() {
-      document.getElementById("id").value = "";
+      document.getElementById("idtypepret").value = "";
       document.getElementById("nom").value = "";
-      document.getElementById("taux_interet").value = "";
-      document.getElementById("duree_mois").value = "";
+      document.getElementById("taux_annuel").value = "";
+      document.getElementById("montant_min").value = "";
+      document.getElementById("montant_max").value = "";
+      document.getElementById("duree_max").value = "";
     }
 
     chargerTypePrets();
