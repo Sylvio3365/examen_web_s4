@@ -4,6 +4,7 @@ require_once __DIR__ . '/../controllers/TypePretController.php';
 require_once __DIR__ . '/../controllers/PretController.php';
 require_once __DIR__ . '/../controllers/FondController.php';
 
+        
 Flight::route('GET /typeprets', ['TypePretController', 'getAll']);
 Flight::route('GET /typeprets/@id', ['TypePretController', 'getById']);
 Flight::route('POST /typeprets', ['TypePretController', 'create']);
@@ -17,3 +18,6 @@ Flight::route('GET /formFond', ['FondController', 'formulaireFond']);
 Flight::route('POST /ajouterFond', ['FondController','insertFond']);
 Flight::route('GET /capital', ['FondController', 'getCapitalActuel']);
 
+
+Flight::route('GET /interets', ['PretController', 'goInteret']);
+Flight::route('POST /api/interets', ['PretController', 'interets']); 

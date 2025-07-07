@@ -23,9 +23,9 @@ class Pret
         $db = getDB();
         $stmt = $db->prepare("INSERT INTO pret (duree, montant, idtypepret, idclient, delais) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([
-            $data->duree, 
-            $data->montant, 
-            $data->idtypepret, 
+            $data->duree,
+            $data->montant,
+            $data->idtypepret,
             $data->idclient,
             $data->delais ?? 0
         ]);
@@ -37,9 +37,9 @@ class Pret
         $db = getDB();
         $stmt = $db->prepare("UPDATE pret SET duree = ?, montant = ?, idtypepret = ?, idclient = ?,delais = ? WHERE idpret = ?");
         $stmt->execute([
-            $data->duree, 
-            $data->montant, 
-            $data->idtypepret, 
+            $data->duree,
+            $data->montant,
+            $data->idtypepret,
             $data->idclient,
             $data->delais ?? 0,
             $id
@@ -69,7 +69,7 @@ class Pret
         $delais = $pret['delais'] ?? 0;
 
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
-        
+
         $tableau = [];
         $capitalRestant = $montant;
 
@@ -103,7 +103,7 @@ class Pret
         return $tableau;
     }
 
-    public static function getInteretsParPeriode($dateDebut, $dateFin) 
+    public static function getInteretsParPeriode($dateDebut, $dateFin)
     {
         $db = getDB();
         $sql = "SELECT 
@@ -117,12 +117,30 @@ class Pret
                 AND (r.annee < YEAR(:dateFin) OR (r.annee = YEAR(:dateFin) AND r.mois <= MONTH(:dateFin)))
                 GROUP BY r.annee, r.mois
                 ORDER BY r.annee, r.mois";
-                
+
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':dateDebut' => $dateDebut,
             ':dateFin' => $dateFin
         ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getAllInterets()
+    {
+        $db = getDB();
+        $sql = "SELECT 
+                r.mois, 
+                r.annee, 
+                SUM(r.interet_mensuel) AS total_interets,
+                COUNT(r.idremboursement) AS nombre_remboursements
+            FROM remboursement r
+            JOIN pret p ON r.idpret = p.idpret
+            GROUP BY r.annee, r.mois
+            ORDER BY r.annee, r.mois";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

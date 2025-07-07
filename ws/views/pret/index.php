@@ -10,6 +10,7 @@
 
 <body>
     <div class="container">
+    <a href="interets" class="admin-link">Voir les intérêts</a>
         <h2>Simulez votre prêt</h2>
 
         <label for="type_pret">Type de prêt</label>
