@@ -27,8 +27,8 @@ CREATE TABLE pret (
     FOREIGN KEY (idclient) REFERENCES client (idclient)
 );
 
-CREATE TABLE operation (
-    idoperation INT AUTO_INCREMENT,
+CREATE TABLE remboursement (
+    idremboursement INT AUTO_INCREMENT,
     mois INT,
     annee INT,
     emprunt_restant DECIMAL(25, 2),
@@ -91,3 +91,15 @@ CREATE TABLE operation_statut (
     FOREIGN KEY (idoperation) REFERENCES operation (idoperation),
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );
+
+INSERT INTO
+    statut (valeur)
+VALUES ('En attente'),
+    ('Validé'),
+    ('Annulé');
+
+INSERT INTO
+    motif (motif)
+VALUES ('Prêt'),
+    ('Ajout de fonds'),
+    ('Remboursement');
