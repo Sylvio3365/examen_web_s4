@@ -1,9 +1,0 @@
-RewriteEngine On
-
-# Route les requêtes du dossier ws vers son index
-RewriteRule ^ws/.*$ ws/index.php [QSA,L]
-
-# Redirige toutes les requêtes vers le contrôleur principal
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [QSA,L]
