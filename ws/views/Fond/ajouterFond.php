@@ -83,7 +83,6 @@
                 xhr.send();
             }
 
-            // Appeler la fonction au chargement
             chargerCapital();
 
         </script>
