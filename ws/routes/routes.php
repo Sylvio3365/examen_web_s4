@@ -23,3 +23,5 @@ Flight::route('GET /interets', ['PretController', 'goInteret']);
 Flight::route('POST /api/interets', ['PretController', 'interets']); 
 
 Flight::route('GET /pret/generate-pdf/@id', ['PretController', 'generatePdf']);
+Flight::route('GET /pret/@id/pdf', ['PretController', 'generatePdf']);
+Flight::route('GET /api/pret/@id/pdf', ['PretController', 'generatePdf']);
