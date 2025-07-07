@@ -2,6 +2,10 @@
 require 'vendor/autoload.php';
 require 'db.php';
 
+// Le web service est accessible dans un sous-dossier,
+// on précise donc son chemin de base pour Flight
+Flight::set('flight.base_url', '/examen_web_s4/ws');
+
 Flight::route('GET /etudiants', function () {
     $db = getDB();
     $stmt = $db->query("SELECT * FROM etudiant");

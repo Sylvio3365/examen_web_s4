@@ -1,6 +1,11 @@
 RewriteEngine On
 
-# Redirige toutes les requêtes vers le contrôleur principal
+# Si la requête concerne le web service, on redirige vers ws/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ws(/.*)?$ ws/index.php [QSA,L]
+
+# Redirige toutes les autres requêtes vers le contrôleur principal
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
