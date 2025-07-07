@@ -23,9 +23,9 @@ class Pret
         $db = getDB();
         $stmt = $db->prepare("INSERT INTO pret (duree, montant, idtypepret, idclient, delais) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([
-            $data->duree, 
-            $data->montant, 
-            $data->idtypepret, 
+            $data->duree,
+            $data->montant,
+            $data->idtypepret,
             $data->idclient,
             $data->delais ?? 0
         ]);
@@ -37,9 +37,9 @@ class Pret
         $db = getDB();
         $stmt = $db->prepare("UPDATE pret SET duree = ?, montant = ?, idtypepret = ?, idclient = ?,delais = ? WHERE idpret = ?");
         $stmt->execute([
-            $data->duree, 
-            $data->montant, 
-            $data->idtypepret, 
+            $data->duree,
+            $data->montant,
+            $data->idtypepret,
             $data->idclient,
             $data->delais ?? 0,
             $id
@@ -69,7 +69,7 @@ class Pret
         $delais = $pret['delais'] ?? 0;
 
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
-        
+
         $tableau = [];
         $capitalRestant = $montant;
 
@@ -103,7 +103,7 @@ class Pret
         return $tableau;
     }
 
-    public static function getInteretsParPeriode($dateDebut, $dateFin) 
+    public static function getInteretsParPeriode($dateDebut, $dateFin)
     {
         $db = getDB();
         $sql = "SELECT 
@@ -117,7 +117,7 @@ class Pret
                 AND (r.annee < YEAR(:dateFin) OR (r.annee = YEAR(:dateFin) AND r.mois <= MONTH(:dateFin)))
                 GROUP BY r.annee, r.mois
                 ORDER BY r.annee, r.mois";
-                
+
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':dateDebut' => $dateDebut,
@@ -125,4 +125,34 @@ class Pret
         ]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function listPendingPret()
+{
+    $db = getDB();
+    $sql = '
+        SELECT 
+            c.nom AS nom_client,
+            tp.nom AS nom_typepret,
+            ps.date_modif,
+            s.valeur AS statut_valeur,
+            ps.idpret,
+            p.montant
+        FROM (
+            SELECT *,
+                   ROW_NUMBER() OVER (PARTITION BY idpret ORDER BY date_modif DESC, idpret_statut DESC) AS rn
+            FROM pret_statut
+        ) ps
+        JOIN pret p ON ps.idpret = p.idpret
+        JOIN client c ON p.idclient = c.idclient
+        JOIN typepret tp ON p.idtypepret = tp.idtypepret
+        JOIN statut s ON ps.idstatut = s.idstatut
+        WHERE ps.rn = 1 AND ps.idstatut = 1
+    ';
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 }

@@ -84,17 +84,17 @@ CREATE TABLE sortant (
     idmotif INT NOT NULL,
     idpret INT NOT NULL,
     PRIMARY KEY (idsortant),
-    UNIQUE (idpret),
     FOREIGN KEY (idmotif) REFERENCES motif (idmotif),
     FOREIGN KEY (idpret) REFERENCES pret (idpret)
 );
 
 -- Table Prêt_statut
 CREATE TABLE pret_statut (
+    idpret_statut INT AUTO_INCREMENT,
     idpret INT,
     idstatut INT,
-    date_modif DATE,
-    PRIMARY KEY (idpret, idstatut),
+    date_modif DATETIME,
+    PRIMARY KEY (idpret_statut),
     FOREIGN KEY (idpret) REFERENCES pret (idpret),
     FOREIGN KEY (idstatut) REFERENCES statut (idstatut)
 );

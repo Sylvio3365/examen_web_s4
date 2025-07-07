@@ -7,7 +7,7 @@ class EtudiantController
 
     public static function goIndex()
     {
-        Flight::render('index');
+        Flight::render('index');    
     }
 
     public static function getAll()
