@@ -12,9 +12,13 @@ class Pret
 
     public static function insertIntoRemboursement($idpret)
     {
+<<<<<<< HEAD
         $db = getDB();
         $pret = Pret::getById($idpret);
 
+=======
+        $pret = Pret::getById($idpret);
+>>>>>>> pret_sylvvvv
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
@@ -23,6 +27,7 @@ class Pret
         $duree = $pret['duree'];
         $taux_annuel = $pret['taux_annuel'];
         $taux_mensuel = $taux_annuel / 100 / 12;
+<<<<<<< HEAD
         $assurance_taux = $pret['taux_assurance'] ?? 0;
         $assurance_totale = $montant * $assurance_taux / 100;
         $assurance_mensuelle = $assurance_totale / $duree;
@@ -74,12 +79,63 @@ class Pret
         //         'idpret' => $idpret
         //     ]);
         // }
+=======
+        $delais = $pret['delais'] ?? 0;
+        $misyassurance = $pret['misyassurance'];
+
+        $assurance_taux = ($misyassurance == 1) ? ($pret['taux_assurance'] ?? 0) : 0;
+        $assurance_totale = $montant * $assurance_taux / 100;
+        $assurance_mensuelle = $assurance_totale / $duree;
+
+        $capitalRestant = $montant;
+        $mensualite_base = Utils::pmt($taux_mensuel, $duree, $montant);
+
+        $mois_actuel = (int)date('n');
+        $annee_actuelle = (int)date('Y');
+
+        $tableau = [];
+
+        for ($i = 1; $i <= ($delais + $duree); $i++) {
+            $index = $i - 1;
+            $mois = ($mois_actuel + $index - 1) % 12 + 1;
+            $annee = $annee_actuelle + floor(($mois_actuel + $index - 1) / 12);
+
+            if ($i > $delais) {
+                $interet = $capitalRestant * $taux_mensuel;
+                $amortissement = $mensualite_base - $interet;
+                $echeance = $mensualite_base + $assurance_mensuelle;
+                $valeur_nette = $capitalRestant - $amortissement;
+
+                $tableau[] = [
+                    'mois' => $mois,
+                    'annee' => $annee,
+                    'emprunt_restant' => round($capitalRestant, 2),
+                    'interet_mensuel' => round($interet, 2),
+                    'assurance' => round($assurance_mensuelle, 2),
+                    'amortissement' => round($amortissement, 2),
+                    'echeance' => round($echeance, 2),
+                    'valeur_nette' => round(max($valeur_nette, 0), 2),
+                    'idpret' => $idpret
+                ];
+
+                $capitalRestant -= $amortissement;
+                if ($capitalRestant < 0) $capitalRestant = 0;
+            }
+        }
+
+        foreach ($tableau as $ligne) {
+            $id = Remboursement::insert($ligne);
+            Remboursement::insertStatut($id, 1);
+        }
+
+        return $tableau;
+>>>>>>> pret_sylvvvv
     }
 
     public static function getById($id)
     {
         $db = getDB();
-        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
+        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -87,14 +143,22 @@ class Pret
     public static function create($data)
     {
         $db = getDB();
-        $stmt = $db->prepare("INSERT INTO pret (duree, montant, idtypepret, idclient, delais) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("
+        INSERT INTO pret (duree, montant, idtypepret, idclient, delais, misyassurance)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
         $stmt->execute([
             $data->duree,
             $data->montant,
             $data->idtypepret,
             $data->idclient,
+<<<<<<< HEAD
             $data->delais ?? 0,
             $data->delais
+=======
+            $data->delais,
+            $data->misyassurance // ← c’est ça qu’il manquait
+>>>>>>> pret_sylvvvv
         ]);
         return $db->lastInsertId();
     }

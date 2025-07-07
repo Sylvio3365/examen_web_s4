@@ -76,6 +76,7 @@
         });
       });
     }
+
     function ajouterOuModifier() {
       const idtypepret = document.getElementById("idtypepret").value;
       const nom = document.getElementById("nom").value;
