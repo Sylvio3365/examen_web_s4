@@ -1,3 +1,9 @@
+DROP DATABASE IF EXISTS webSMD;
+
+CREATE DATABASE webSMD;
+
+USE webSMD;
+
 CREATE TABLE client (
     idclient INT AUTO_INCREMENT,
     nom VARCHAR(50),
