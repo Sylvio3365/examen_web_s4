@@ -92,8 +92,6 @@ class PretController
                 return;
             }
 
-            // Récupérer les informations du type de prêt depuis la requête JOIN dans Pret::getById()
-            // Les données sont déjà disponibles dans $pret
             $typePret = [
                 'nom' => $pret['type_pret'],
                 'taux_annuel' => $pret['taux_annuel']
@@ -110,7 +108,7 @@ class PretController
             // Informations de l'établissement
             $pdf->SectionTitle(utf8_decode('Informations de l\'établissement financier'));
             $pdf->InfoLine('Nom:', 'Banque SMD');
-            $pdf->InfoLine('Adresse:', utf8_decode('123 Avenue des Prêts, Antananarivo'));
+            $pdf->InfoLine('Adresse:', utf8_decode('123 Mahalavolona, Andoharanofotsy'));
             $pdf->InfoLine('Contact:', 'contact@banquesmd.mg | +261 34 00 000 00');
             $pdf->Ln(10);
 
@@ -179,10 +177,6 @@ class PretController
             $pdf->SimpleTable($headers, $data);
             $pdf->Ln(10);
 
-            // Mentions légales
-            $pdf->SectionTitle(utf8_decode('Mentions légales'));
-            $pdf->MultiCell(0, 6, utf8_decode('Ce document constitue une confirmation de votre prêt auprès de notre établissement. Les informations contenues dans ce document sont valables sous réserve d\'acceptation définitive par nos services. En cas de retard de paiement, des pénalités de 2% du montant dû seront appliquées.'));
-            $pdf->Ln(15);
 
             // Signature
             $pdf->Cell(0, 6, utf8_decode('Fait à Antananarivo, le ') . date('d/m/Y'), 0, 1, 'R');

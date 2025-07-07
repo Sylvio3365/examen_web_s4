@@ -14,7 +14,6 @@ Flight::route('DELETE /typeprets/@id', ['TypePretController', 'delete']);
 Flight::route('GET /', ['TypePretController', 'goIndex']);
 
 Flight::route('GET /pret', ['PretController', 'goIndex']);
-Flight::route('GET /interets', ['PretController', 'interets']);
 Flight::route('GET /formFond', ['FondController', 'formulaireFond']);
 Flight::route('POST /ajouterFond', ['FondController', 'insertFond']);
 Flight::route('GET /capital', ['FondController', 'getCapitalActuel']);
