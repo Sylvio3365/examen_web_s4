@@ -12,25 +12,37 @@
     <div class="container">
         <h2>Simulez votre prêt</h2>
 
+        <!-- Type de prêt -->
         <label for="type_pret">Type de prêt</label>
         <select id="type_pret"></select>
 
-        <label for="montant">Montant (en Ar)</label>
-        <input type="number" id="montant" step="50" />
-        <input type="range" id="amountRange" step="50" />
-
-        <label for="duree">Durée (mois)</label>
-        <input type="number" id="duree" />
-        <input type="range" id="dureeRange" />
-
-        <label for="delai">Payer après (mois)</label>
-        <input type="number" id="delai" value="0" min="0" max="12" style="width: 60px;" />
-
+        <!-- Client -->
         <label for="idclient">Client</label>
         <select id="idclient">
             <option value="">-- Choisir un client --</option>
         </select>
 
+        <!-- Montant -->
+        <label for="montant">Montant (en Ar)</label>
+        <input type="number" id="montant" step="50" />
+        <input type="range" id="amountRange" step="50" />
+
+        <!-- Durée -->
+        <label for="duree">Durée (mois)</label>
+        <input type="number" id="duree" />
+        <input type="range" id="dureeRange" />
+
+        <!-- Délai -->
+        <label for="delai">Payer après (mois)</label>
+        <input type="number" id="delai" value="0" min="0" max="12" style="width: 60px;" />
+
+        <!-- Assurance -->
+        <label>
+            <input type="checkbox" id="avec_assurance" />
+            Ajouter une assurance (calculée selon le type de prêt)
+        </label>
+
+        <!-- Résultat -->
         <div class="result-box" id="resultat">
             Mensualité : <span id="echeance">0</span> Ar
         </div>
@@ -49,6 +61,7 @@
         const dureeInput = document.getElementById("duree");
         const dureeRange = document.getElementById("dureeRange");
         const delaiInput = document.getElementById("delai");
+        const avecAssuranceInput = document.getElementById("avec_assurance");
         const echeanceAffiche = document.getElementById("echeance");
         const idClientSelect = document.getElementById("idclient");
 
@@ -58,17 +71,11 @@
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
-                    // console.log("Réponse brute du serveur :", xhr.responseText);
-                    if (xhr.status === 200) {
-                        try {
-                            const json = JSON.parse(xhr.responseText);
-                            callback(json); 
-                        } catch (e) {
-                            console.error("Erreur JSON.parse :", e);
-                            alert("❌ Réponse non JSON :\n" + xhr.responseText);
-                        }
-                    } else {
-                        alert(`❌ Erreur HTTP ${xhr.status} : ${xhr.statusText}\n${xhr.responseText}`);
+                    try {
+                        const json = JSON.parse(xhr.responseText);
+                        callback(json);
+                    } catch (e) {
+                        alert("Erreur serveur : " + xhr.responseText);
                     }
                 }
             };
@@ -136,22 +143,27 @@
             calculer();
         });
 
+
         dureeInput.addEventListener("input", () => {
             dureeRange.value = dureeInput.value;
             calculer();
         });
+
+        avecAssuranceInput.addEventListener("change", calculer); // ✅ AJOUT ICI
 
         function calculer() {
             const tp = typePrets[typeSelect.value];
             const montant = parseFloat(montantInput.value);
             const duree = parseInt(dureeInput.value);
             const tauxMensuel = parseFloat(tp.taux_annuel) / 100 / 12;
+            const tauxAssurance = avecAssuranceInput.checked ? parseFloat(tp.taux_assurance || 0) : 0;
 
             if (isNaN(montant) || isNaN(duree) || duree <= 0) {
                 echeanceAffiche.textContent = "0";
                 return;
             }
 
+            // Calcul de la mensualité sans assurance
             let mensualite = 0;
             if (tauxMensuel === 0) {
                 mensualite = montant / duree;
@@ -159,7 +171,13 @@
                 mensualite = (montant * tauxMensuel) / (1 - Math.pow(1 + tauxMensuel, -duree));
             }
 
-            echeanceAffiche.textContent = Math.round(mensualite).toLocaleString("fr-FR");
+            // Calcul assurance totale puis par mois
+            const assuranceTotale = montant * (tauxAssurance / 100);
+            const assuranceMensuelle = assuranceTotale / duree;
+            // Mensualité finale
+            const mensualiteTotale = mensualite + assuranceMensuelle;
+            // Affichage
+            echeanceAffiche.textContent = Math.round(mensualiteTotale).toLocaleString("fr-FR");
         }
 
         function enregistrerPret() {
@@ -171,12 +189,12 @@
                 return;
             }
 
-            const data = `montant=${montantInput.value}&duree=${dureeInput.value}&idtypepret=${tp.idtypepret}&idclient=${idclient}&delais=${delaiInput.value}`;
+            const data = `montant=${montantInput.value}&duree=${dureeInput.value}&idtypepret=${tp.idtypepret}&idclient=${idclient}&delais=${delaiInput.value}&assurance=${avecAssuranceInput.checked ? 1 : 0}`;
             ajax("POST", "/prets/add", data, (res) => {
                 if (res.status === "success") {
-                    alert("Prêt enregistré avec succès !");
+                    alert("✅ Prêt enregistré avec succès !");
                 } else {
-                    alert("Erreur : " + (res.message || "Échec enregistrement"));
+                    alert("❌ Erreur : " + (res.message || "Échec enregistrement"));
                 }
             });
         }
