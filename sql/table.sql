@@ -21,6 +21,7 @@ CREATE TABLE typepret (
     montant_min DECIMAL(15, 2),
     montant_max DECIMAL(15, 2),
     duree_max DECIMAL(15, 2),
+    deleted_at DATE,
     PRIMARY KEY (idtypepret)
 );
 
