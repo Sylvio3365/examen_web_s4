@@ -10,6 +10,25 @@ class PretController
         Flight::render('pret/index');
     }
 
+<<<<<<< Updated upstream
+=======
+    public static function goInteret() {
+        Flight::render('pret/interets');
+    }
+
+    public static function interets() {
+        $dateDebut = Flight::request()->data->date_debut ?? '';
+        $dateFin = Flight::request()->data->date_fin ?? '';
+        
+        if (!empty($dateDebut) && !empty($dateFin)) {
+            $interets = Pret::getInteretsParPeriode($dateDebut, $dateFin);
+        } else {
+            $interets = Pret::getAllInterets();
+        }
+        
+        Flight::json([
+            
+>>>>>>> Stashed changes
     public function interets()
     {
         $pretModel = new Pret();
