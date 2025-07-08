@@ -1,19 +1,20 @@
-<link rel="stylesheet" href="public/css/style.css">
+<link rel="stylesheet" href="<?php echo $apiBase ?>/public/css/style.css">
 
-<h1>Ajouter un fond à l’établissement financier</h1>
+<div class="container my-4">
+    <h1 class="mb-4">Ajouter un fond à l’établissement financier</h1>
 
-<div class="mb-3">
-    <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+    <div class="mb-3">
+        <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+    </div>
+    <div class="mb-3">
+        <input type="date" id="date_" class="form-control" required>
+    </div>
+    <button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
+
+    <h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
+
+    <p id="message" class="mt-3"></p>
 </div>
-<div class="mb-3">
-    <input type="date" id="date_" class="form-control" placeholder="Date du fond" required>
-</div>
-<button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
-
-<h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
-
-
-<p id="message" class="mt-3"></p>
 
 <script>
     const apiBase = "<?php echo $apiBase ?>";

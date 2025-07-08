@@ -1,19 +1,20 @@
-<link rel="stylesheet" href="public/css/style.css">
+<link rel="stylesheet" href="<?php echo $apiBase ?>/public/css/style.css">
 
-<h1>Gestion des types de prêt</h1>
+<div class="container my-4">
+  <h1 class="mb-4">Gestion des types de prêt</h1>
 
-  <div>
+  <div class="mb-3">
     <input type="hidden" id="idtypepret">
-    <input type="text" id="nom" placeholder="Nom du type">
-    <input type="number" id="taux_annuel" placeholder="Taux annuel (%)" step="0.01">
-    <input type="number" id="montant_min" placeholder="Montant minimum">
-    <input type="number" id="montant_max" placeholder="Montant maximum">
-    <input type="number" id="duree_max" placeholder="Durée max (mois)">
-    <input type="number" id="taux_assurance" placeholder="taux_assurance">
-    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+    <input type="text" id="nom" class="form-control mb-2" placeholder="Nom du type">
+    <input type="number" id="taux_annuel" class="form-control mb-2" placeholder="Taux annuel (%)" step="0.01">
+    <input type="number" id="montant_min" class="form-control mb-2" placeholder="Montant minimum">
+    <input type="number" id="montant_max" class="form-control mb-2" placeholder="Montant maximum">
+    <input type="number" id="duree_max" class="form-control mb-2" placeholder="Durée max (mois)">
+    <input type="number" id="taux_assurance" class="form-control mb-2" placeholder="taux_assurance">
+    <button class="btn btn-primary" onclick="ajouterOuModifier()">Ajouter / Modifier</button>
   </div>
 
-  <table id="table-typeprets">
+  <table id="table-typeprets" class="table table-bordered table-striped">
     <thead>
       <tr>
         <th>ID</th>
@@ -28,6 +29,7 @@
     </thead>
     <tbody></tbody>
   </table>
+</div>
 
   <script>
     const apiBase = "<?php echo $apiBase ?>";
