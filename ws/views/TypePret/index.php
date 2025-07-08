@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
+<link rel="stylesheet" href="public/css/style.css">
 
-<head>
-  <meta charset="UTF-8">
-  <title>Gestion des types de prêt</title>
-  <link rel="stylesheet" href="public/css/style.css">
-</head>
-
-<body>
-
-  <h1>Gestion des types de prêt</h1>
+<h1>Gestion des types de prêt</h1>
 
   <div>
     <input type="hidden" id="idtypepret">
@@ -39,7 +30,7 @@
   </table>
 
   <script>
-    const apiBase = "http://localhost/examen_web_s4/ws";
+    const apiBase = "<?php echo $apiBase ?>";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -141,7 +132,3 @@
 
     chargerTypePrets();
   </script>
-
-</body>
-
-</html>

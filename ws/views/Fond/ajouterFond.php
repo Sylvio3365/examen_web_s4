@@ -1,39 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="public/css/style.css">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonds</title>
-</head>
+<h1>Ajouter un fond à l’établissement financier</h1>
 
-<body>
-    <!DOCTYPE html>
-    <html lang="fr">
+<div class="mb-3">
+    <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+</div>
+<div class="mb-3">
+    <input type="date" id="date_" class="form-control" placeholder="Date du fond" required>
+</div>
+<button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Ajout de fond</title>
-        <link rel="stylesheet" href="public/css/style.css">
-    </head>
-
-    <body>
-
-        <h1>Ajouter un fond à l’établissement financier</h1>
-
-        <div>
-            <input type="number" id="montant" placeholder="Montant du fond" step="0.01" required>
-            <input type="date" id="date_" placeholder="Date du fond" required>
-            <button onclick="ajouterFond()">Ajouter</button>
-        </div>
-
-        <h2>Capital actuel disponible : <span id="capital">...</span> Ar</h2>
+<h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
 
 
-        <p id="message"></p>
+<p id="message" class="mt-3"></p>
 
-        <script>
-            const apiBase = "http://localhost/examen_web_s4/ws";
+<script>
+    const apiBase = "<?php echo $apiBase ?>";
 
             function ajouterFond() {
                 const montant = document.getElementById("montant").value;
@@ -83,14 +66,6 @@
                 xhr.send();
             }
 
-            chargerCapital();
+    chargerCapital();
 
-        </script>
-
-    </body>
-
-    </html>
-
-</body>
-
-</html>
+</script>

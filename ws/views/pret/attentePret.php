@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-  <meta charset="UTF-8">
-  <title>Prêts en attente</title>
-  <style>
+<style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
@@ -71,10 +65,7 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
-  </style>
-</head>
-
-<body>
+</style>
 
   <h1>Liste des prêts en attente</h1>
 
@@ -98,8 +89,8 @@
   <p id="message"></p>
 
   <script>
-    const apiUrl = "http://localhost/examen_web_s4/ws/pendingPret";
-    const apiBase = "http://localhost/examen_web_s4/ws";
+    const apiUrl = "<?php echo $apiBase ?>/pendingPret";
+    const apiBase = "<?php echo $apiBase ?>";
 
     function chargerPrets() {
       fetch(apiUrl)
@@ -263,7 +254,3 @@
     // Charger les prêts au démarrage
     chargerPrets();
   </script>
-
-</body>
-
-</html>

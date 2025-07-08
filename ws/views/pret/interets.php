@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intérêts gagnés</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
             max-width: 1000px;
@@ -14,9 +8,7 @@
             height: 400px;
             margin-top: 30px;
         }
-    </style>
-</head>
-<body>
+</style>
     <div class="container">
         <h2 class="mb-4">Intérêts gagnés par mois</h2>
 
@@ -85,7 +77,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?php echo $apiBase ?>";
         let interetsChart = null;
         let currentData = [];
 
@@ -276,5 +268,3 @@
             chargerInterets();
         });
     </script>
-</body>
-</html>

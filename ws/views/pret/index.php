@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simulation de prêt</title>
-    <link rel="stylesheet" href="public/css/style_pret.css" />
-</head>
-
-<body>
+<link rel="stylesheet" href="public/css/style_pret.css" />
     <div class="container">
         <h2>Simulez votre prêt</h2>
 
@@ -52,7 +42,7 @@
     </div>
 
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?php echo $apiBase ?>";
         let typePrets = [];
 
         const typeSelect = document.getElementById("type_pret");
@@ -205,6 +195,3 @@
             chargerClients();
         };
     </script>
-</body>
-
-</html>
