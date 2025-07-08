@@ -66,11 +66,19 @@ class Client
 
         foreach ($clients as &$client) {
             $stmt = $db->prepare("
-                SELECT p.*, tp.nom AS type_pret,
+                SELECT p.*, 
+                       tp.nom AS type_pret,
+                       -- Récupérer le statut le plus récent
+                       (SELECT ps.idstatut 
+                        FROM pret_statut ps 
+                        WHERE ps.idpret = p.idpret 
+                        ORDER BY ps.date_modif DESC, ps.idpret_statut DESC 
+                        LIMIT 1) AS statut,
+                       -- Récupérer la date de modification la plus récente
                        (SELECT ps.date_modif 
                         FROM pret_statut ps 
                         WHERE ps.idpret = p.idpret 
-                        ORDER BY ps.date_modif DESC 
+                        ORDER BY ps.date_modif DESC, ps.idpret_statut DESC 
                         LIMIT 1) AS derniere_modification
                 FROM pret p
                 JOIN typepret tp ON p.idtypepret = tp.idtypepret
@@ -84,4 +92,3 @@ class Client
         return $clients;
     }
 }
-
