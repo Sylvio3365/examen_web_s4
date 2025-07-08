@@ -316,7 +316,7 @@
     </div>
 
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?= Flight::get('base_url') ?>";
         let interetsChart = null;
         let currentData = [];
 
