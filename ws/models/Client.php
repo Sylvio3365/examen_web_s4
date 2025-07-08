@@ -52,41 +52,47 @@ class Client
     public static function getAllWithLoans()
     {
         $db = getDB();
+        
+        // Récupérer tous les clients (même sans prêts validés)
         $stmt = $db->prepare("
             SELECT c.*, 
-                COUNT(p.idpret) AS nombre_prets,
-                SUM(p.montant) AS total_montant
+                0 AS nombre_prets,
+                0 AS total_montant
             FROM client c
-            LEFT JOIN pret p ON c.idclient = p.idclient
-            GROUP BY c.idclient
             ORDER BY c.nom, c.prenom
         ");
         $stmt->execute();
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Pour chaque client, récupérer uniquement ses prêts validés
         foreach ($clients as &$client) {
             $stmt = $db->prepare("
                 SELECT p.*, 
                        tp.nom AS type_pret,
-                       -- Récupérer le statut le plus récent
-                       (SELECT ps.idstatut 
-                        FROM pret_statut ps 
-                        WHERE ps.idpret = p.idpret 
-                        ORDER BY ps.date_modif DESC, ps.idpret_statut DESC 
-                        LIMIT 1) AS statut,
-                       -- Récupérer la date de modification la plus récente
-                       (SELECT ps.date_modif 
-                        FROM pret_statut ps 
-                        WHERE ps.idpret = p.idpret 
-                        ORDER BY ps.date_modif DESC, ps.idpret_statut DESC 
-                        LIMIT 1) AS derniere_modification
+                       latest_status.idstatut AS statut,
+                       latest_status.date_modif AS derniere_modification
                 FROM pret p
                 JOIN typepret tp ON p.idtypepret = tp.idtypepret
-                WHERE p.idclient = ?
-                ORDER BY derniere_modification DESC
+                JOIN (
+                    SELECT ps1.idpret, ps1.idstatut, ps1.date_modif
+                    FROM pret_statut ps1
+                    INNER JOIN (
+                        SELECT idpret, MAX(date_modif) AS max_date, MAX(idpret_statut) AS max_id
+                        FROM pret_statut
+                        GROUP BY idpret
+                    ) ps2 ON ps1.idpret = ps2.idpret 
+                         AND ps1.date_modif = ps2.max_date 
+                         AND ps1.idpret_statut = ps2.max_id
+                ) latest_status ON p.idpret = latest_status.idpret
+                WHERE p.idclient = ? AND latest_status.idstatut = 2
+                ORDER BY latest_status.date_modif DESC
             ");
             $stmt->execute([$client['idclient']]);
             $client['prets'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Calculer le nombre de prêts et le montant total pour les prêts validés uniquement
+            $client['nombre_prets'] = count($client['prets']);
+            $client['total_montant'] = array_sum(array_column($client['prets'], 'montant'));
         }
 
         return $clients;

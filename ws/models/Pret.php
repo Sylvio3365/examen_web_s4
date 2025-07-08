@@ -209,11 +209,21 @@ class Pret
                     COUNT(r.idremboursement) AS nombre_remboursements
                 FROM remboursement r
                 JOIN pret p ON r.idpret = p.idpret
-                WHERE (r.annee > YEAR(:dateDebut) OR (r.annee = YEAR(:dateDebut) AND r.mois >= MONTH(:dateDebut)))
+                JOIN (
+                    SELECT ps1.idpret, ps1.idstatut
+                    FROM pret_statut ps1
+                    INNER JOIN (
+                        SELECT idpret, MAX(date_modif) AS max_date
+                        FROM pret_statut
+                        GROUP BY idpret
+                    ) ps2 ON ps1.idpret = ps2.idpret AND ps1.date_modif = ps2.max_date
+                ) latest_status ON p.idpret = latest_status.idpret
+                WHERE latest_status.idstatut = 2
+                AND (r.annee > YEAR(:dateDebut) OR (r.annee = YEAR(:dateDebut) AND r.mois >= MONTH(:dateDebut)))
                 AND (r.annee < YEAR(:dateFin) OR (r.annee = YEAR(:dateFin) AND r.mois <= MONTH(:dateFin)))
                 GROUP BY r.annee, r.mois
                 ORDER BY r.annee, r.mois";
-
+    
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':dateDebut' => $dateDebut,
@@ -232,9 +242,19 @@ class Pret
                 COUNT(r.idremboursement) AS nombre_remboursements
             FROM remboursement r
             JOIN pret p ON r.idpret = p.idpret
+            JOIN (
+                SELECT ps1.idpret, ps1.idstatut
+                FROM pret_statut ps1
+                INNER JOIN (
+                    SELECT idpret, MAX(date_modif) AS max_date
+                    FROM pret_statut
+                    GROUP BY idpret
+                ) ps2 ON ps1.idpret = ps2.idpret AND ps1.date_modif = ps2.max_date
+            ) latest_status ON p.idpret = latest_status.idpret
+            WHERE latest_status.idstatut = 2
             GROUP BY r.annee, r.mois
             ORDER BY r.annee, r.mois";
-
+    
         $stmt = $db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -273,6 +273,16 @@
             </div>
         </div>
 
+        <div class="chart-section">
+            <div class="chart-header">
+                <h3>Visualisation graphique</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="interetsChart"></canvas>
+            </div>
+        </div>
+        <br>
+
         <div class="results-section">
             <div class="results-header">
                 <h3>Résultats</h3>
@@ -303,14 +313,6 @@
             </div>
         </div>
 
-        <div class="chart-section">
-            <div class="chart-header">
-                <h3>Visualisation graphique</h3>
-            </div>
-            <div class="chart-container">
-                <canvas id="interetsChart"></canvas>
-            </div>
-        </div>
     </div>
 
     <script>
