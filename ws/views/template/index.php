@@ -20,7 +20,7 @@ $apiBase = "http://localhost/examen_web_s4/ws";
 <body class="sb-nav-fixed">
     <!-- NAVBAR -->
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand ps-3" href="index.html">
+        <a class="navbar-brand ps-3" href="#">
             <img src="public/images/mety.png" alt="Logo" style="height: 80px; width: 80px; margin-left: 40px; margin-top: 5px;">
         </a>
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
