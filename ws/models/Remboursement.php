@@ -78,4 +78,13 @@ class Remboursement
         $stmt->execute([$montant, $idmotif]);
         return $db->lastInsertId();
     }
+
+    public static function insertEntrant($mois, $annee, $montant, $idmotif)
+    {
+        $db = getDB();
+        $date = sprintf('%04d-%02d-01', $annee, $mois);
+        $stmt = $db->prepare("INSERT INTO entrant (montant, date_, idmotif) VALUES (?, ?, ?)");
+        $stmt->execute([$montant, $date, $idmotif]);
+        return $db->lastInsertId();
+    }
 }

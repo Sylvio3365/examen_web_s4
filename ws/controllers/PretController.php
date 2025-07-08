@@ -6,6 +6,7 @@ require_once __DIR__ . '/../models/Remboursement.php';
 require_once __DIR__ . '/../models/Pret.php';
 require_once __DIR__ . '/../helpers/PdfHelper.php';
 require_once __DIR__ . '/../models/Client.php';
+require_once __DIR__ . '/../models/Fond.php';
 
 class PretController
 {
@@ -47,6 +48,7 @@ class PretController
     public static function addPret()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $data = (object) [
                 'montant' => $_POST['montant'] ?? null,
                 'duree' => $_POST['duree'] ?? null,
@@ -56,10 +58,22 @@ class PretController
                 'misyassurance' => isset($_POST['assurance']) && $_POST['assurance'] == 1 ? 1 : 0
             ];
 
+            $sommeMontantEntrant = Fond::getSommeMontantEntrant();
+            $sommeMontantSortant = Fond::getSommeMontantSortant();
+            $TotalMontantActuel = $sommeMontantEntrant - $sommeMontantSortant;
+
+            if ($TotalMontantActuel < $data->montant) {
+                Flight::json([
+                    'status' => 'error',
+                    'message' => 'Fonds insuffisants dans l’établissement financier.'
+                ], 400);
+                return;
+            }
             try {
-                $id = Pret::create($data); // insert du pret
-                Pret::insertPretEnAttente($id); // statut d'attente
-                Pret::insertIntoRemboursement($id); // echeancier
+                $id = Pret::create($data); // Insertion du prêt
+                Pret::insertPretEnAttente($id); // Statut d'attente
+                Pret::insertIntoRemboursement($id); // Génération de l’échéancier
+
                 Flight::json([
                     'status' => 'success',
                     'id' => $id
@@ -71,9 +85,13 @@ class PretController
                 ], 500);
             }
         } else {
-            Flight::json(['status' => 'error', 'message' => 'Methode invalide'], 405);
+            Flight::json([
+                'status' => 'error',
+                'message' => 'Méthode invalide. Utilisez POST.'
+            ], 405);
         }
     }
+
     public static function generatePdf($idPret)
     {
         try {

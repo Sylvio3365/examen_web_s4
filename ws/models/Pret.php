@@ -14,6 +14,7 @@ class Pret
     public static function insertIntoRemboursement($idpret)
     {
         $pret = Pret::getById($idpret);
+
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
@@ -72,9 +73,10 @@ class Pret
 
         foreach ($tableau as $ligne) {
             $id = Remboursement::insert($ligne);
-            Remboursement::insertStatut($id, 1);
+            Remboursement::insertStatut($id, 2);
+            $remboursement = Remboursement::findById($id);
+            Remboursement::insertEntrant($remboursement['mois'], $remboursement['annee'], $remboursement['echeance'], 3);
         }
-
         return $tableau;
     }
 

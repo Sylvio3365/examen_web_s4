@@ -27,6 +27,6 @@ class RemboursementController
     {
         Remboursement::insertStatut($id, 2);
         $remboursement = Remboursement::findById($id);
-        Remboursement::inserEntrant($remboursement['echeance'], 3);
+        Remboursement::insertEntrant($remboursement['mois'], $remboursement['annee'], $remboursement['echeance'], 3);
     }
 }
