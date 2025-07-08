@@ -12,13 +12,7 @@ class Pret
 
     public static function insertIntoRemboursement($idpret)
     {
-<<<<<<<<< Temporary merge branch 1
-        $db = getDB();
         $pret = Pret::getById($idpret);
-
-=========
-        $pret = Pret::getById($idpret);
->>>>>>>>> Temporary merge branch 2
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
@@ -27,59 +21,6 @@ class Pret
         $duree = $pret['duree'];
         $taux_annuel = $pret['taux_annuel'];
         $taux_mensuel = $taux_annuel / 100 / 12;
-<<<<<<<<< Temporary merge branch 1
-        $assurance_taux = $pret['taux_assurance'] ?? 0;
-        $assurance_totale = $montant * $assurance_taux / 100;
-        $assurance_mensuelle = $assurance_totale / $duree;
-        $delais = $pret['delais'] ?? 0;
-
-        $capitalRestant = $montant;
-
-        $mensualite_base = Utils::pmt($taux_mensuel, $duree, $montant);
-
-        return $mensualite_base;
-        // $mois_actuel = (int)date('n');
-        // $annee_actuelle = (int)date('Y');
-
-        // // Boucle sur toute la période : délai + durée
-        // for ($i = 1; $i <= ($delais + $duree); $i++) {
-        //     $index = $i - 1;
-        //     $mois = ($mois_actuel + $index - 1) % 12 + 1;
-        //     $annee = $annee_actuelle + floor(($mois_actuel + $index - 1) / 12);
-
-        //     // Initialisation
-        //     $interet = 0;
-        //     $amortissement = 0;
-        //     $echeance = 0;
-
-        //     if ($i <= $delais) {
-        //         // Pendant le délai : pas d’amortissement, ni d’intérêt
-        //         $echeance = $assurance_mensuelle;
-        //     } else {
-        //         // Après délai, commencer le remboursement
-        //         $interet = $capitalRestant * $taux_mensuel;
-        //         $amortissement = $mensualite_base - $interet;
-        //         $capitalRestant -= $amortissement;
-
-        //         // Protection contre dépassement arrondi
-        //         if ($capitalRestant < 0) $capitalRestant = 0;
-
-        //         $echeance = $mensualite_base + $assurance_mensuelle;
-        //     }
-
-        //     Remboursement::insert([
-        //         'mois' => $mois,
-        //         'annee' => $annee,
-        //         'emprunt_restant' => round($capitalRestant, 2),
-        //         'interet_mensuel' => round($interet, 2),
-        //         'assurance' => round($assurance_mensuelle, 2),
-        //         'amortissement' => round($amortissement, 2),
-        //         'echeance' => round($echeance, 2),
-        //         'valeur_nette' => number_format(max($capitalRestant, 0), 2, '.', ' '),
-        //         'idpret' => $idpret
-        //     ]);
-        // }
-=========
         $delais = $pret['delais'] ?? 0;
         $misyassurance = $pret['misyassurance'];
 
@@ -90,8 +31,10 @@ class Pret
         $capitalRestant = $montant;
         $mensualite_base = Utils::pmt($taux_mensuel, $duree, $montant);
 
-        $mois_actuel = (int) date('n');
-        $annee_actuelle = (int) date('Y');
+        $mois_actuel = (int)date('n');
+        $annee_actuelle = (int)date('Y');
+        $mois_actuel = (int)date('n');
+        $annee_actuelle = (int)date('Y');
 
         $tableau = [];
 
@@ -119,8 +62,8 @@ class Pret
                 ];
 
                 $capitalRestant -= $amortissement;
-                if ($capitalRestant < 0)
-                    $capitalRestant = 0;
+                if ($capitalRestant < 0) $capitalRestant = 0;
+                if ($capitalRestant < 0) $capitalRestant = 0;
             }
         }
 
@@ -130,22 +73,14 @@ class Pret
         }
 
         return $tableau;
->>>>>>>>> Temporary merge branch 2
     }
+
+
     public static function getById($id)
     {
         $db = getDB();
-        $stmt = $db->prepare("
-            SELECT p.*, tp.nom AS type_pret, 
-                   (SELECT ps.idstatut 
-                    FROM pret_statut ps 
-                    WHERE ps.idpret = p.idpret 
-                    ORDER BY ps.date_modif DESC 
-                    LIMIT 1) AS statut
-            FROM pret p 
-            JOIN typepret tp ON p.idtypepret = tp.idtypepret 
-            WHERE p.idpret = ?
-        ");
+        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
+        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -162,13 +97,8 @@ class Pret
             $data->montant,
             $data->idtypepret,
             $data->idclient,
-<<<<<<<<< Temporary merge branch 1
-            $data->delais ?? 0,
-            $data->delais
-=========
             $data->delais,
             $data->misyassurance // ← c’est ça qu’il manquait
->>>>>>>>> Temporary merge branch 2
         ]);
         return $db->lastInsertId();
     }
@@ -218,18 +148,10 @@ class Pret
     public static function calculerAmortissement($idPret)
     {
         $pret = self::getById($idPret);
-        if (!$pret) {
-            throw new Exception("Prêt introuvable");
-        }
-
         $tauxMensuel = $pret['taux_annuel'] / 100 / 12;
         $duree = $pret['duree'];
         $montant = $pret['montant'];
         $delais = $pret['delais'] ?? 0;
-
-        // Gestion de l'assurance avec valeur par défaut si misyassurance n'existe pas
-        $hasAssurance = isset($pret['misyassurance']) ? ($pret['misyassurance'] == 1) : false;
-        $assuranceMensuelle = $hasAssurance ? ($montant * ($pret['taux_assurance'] ?? 0) / 100 / $duree) : 0;
 
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
 
@@ -241,10 +163,10 @@ class Pret
                 $tableau[] = [
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
-                    'echeance' => $assuranceMensuelle,
+                    'echeance' => 0,
+                    'echeance' => 0,
                     'interet' => 0,
                     'amortissement' => 0,
-                    'assurance' => $assuranceMensuelle,
                     'capital_restant' => $capitalRestant
                 ];
             } else {
@@ -256,10 +178,10 @@ class Pret
                 $tableau[] = [
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
-                    'echeance' => $mensualite + $assuranceMensuelle,
+                    'echeance' => $mensualite,
+                    'echeance' => $mensualite,
                     'interet' => $interet,
                     'amortissement' => $amortissement,
-                    'assurance' => $assuranceMensuelle,
                     'capital_restant' => max($capitalRestant, 0)
                 ];
             }
