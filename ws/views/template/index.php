@@ -33,7 +33,7 @@
                     <li>
                         <hr class="dropdown-divider" />
                     </li>
-                    <li><a class="dropdown-item" href="#">Déconnexion</a></li>
+                    <li><a class="dropdown-item" href="<?php echo $apiBase?>/logout">Déconnexion</a></li>
                 </ul>
             </li>
         </ul>

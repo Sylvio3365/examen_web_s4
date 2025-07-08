@@ -37,10 +37,10 @@ class LoginController
                 $_SESSION['user_id'] = $user['id'] ?? null;
                 $_SESSION['username'] = $user['nom'];
                 $_SESSION['logged_in'] = true;
-                
+
                 Flight::json([
-                    'success' => true, 
-                    'message' => 'Connexion réussie', 
+                    'success' => true,
+                    'message' => 'Connexion réussie',
                     'user' => $user['nom']
                 ]);
             } else {
@@ -51,4 +51,15 @@ class LoginController
             Flight::json(['success' => false, 'error' => 'Erreur serveur'], 500);
         }
     }
+
+    public static function logout()
+    {
+        session_start();
+        session_unset();  // Supprime toutes les variables de session
+        session_destroy();  // Détruit la session
+
+        // Redirige vers la page de login ou autre
+        Flight::redirect('/');
+    }
+
 }

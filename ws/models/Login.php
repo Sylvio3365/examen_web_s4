@@ -27,4 +27,5 @@ class Login{
         $stmt = $db->prepare("INSERT INTO userEF (nom, mdp) VALUES (?, ?)");
         return $stmt->execute([$username, $hashedPassword]);
     }
+    
 }

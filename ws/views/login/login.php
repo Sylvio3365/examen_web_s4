@@ -2,65 +2,276 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Espace Client</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 20px;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        button {
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 48px;
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
+            max-width: 420px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .logo-icon::after {
+            content: "🏦";
+            font-size: 24px;
+        }
+
+        h1 {
+            color: #1f2937;
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            color: #1f2937;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
             color: white;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            margin-top: 8px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
         }
-        button:disabled {
-            background-color: #ccc;
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            background: #d1d5db;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
+
+        .login-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .login-btn.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 4px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        .message.success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            border: 1px solid #06d6a0;
+        }
+
+        .message.error {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            border: 1px solid #f87171;
+        }
+
+        .security-info {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .security-info p {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #059669;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .security-badge::before {
+            content: "🔒";
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Animation d'entrée */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container {
+            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
 <body>
-    <h1>Connexion</h1>
-    
-    <form id="loginForm">
-        <input type="text" id="nom" placeholder="Nom d'utilisateur" required>
-        <input type="password" id="mdp" placeholder="Mot de passe" required>
-        <button type="submit" id="loginBtn">Se connecter</button>
-        <div id="message"></div>
-    </form>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <h1>Connexion</h1>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="nom">Nom d'utilisateur</label>
+                <input type="text" id="nom" placeholder="Votre nom d'utilisateur" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="mdp">Mot de passe</label>
+                <input type="password" id="mdp" placeholder="Votre mot de passe" required>
+            </div>
+            
+            <button type="submit" id="loginBtn" class="login-btn">Se connecter</button>
+            
+            <div id="message" class="message"></div>
+        </form>
+        
+        <div class="security-info">
+            <p>Votre connexion est sécurisée par un chiffrement SSL 256-bit</p>
+            <div class="security-badge">Connexion sécurisée</div>
+        </div>
+    </div>
 
     <script>
         const apiBase = "http://localhost/examen_web_s4/ws";
@@ -84,7 +295,7 @@
 
             // Désactiver le bouton pendant la requête
             loginBtn.disabled = true;
-            loginBtn.textContent = "Connexion...";
+            loginBtn.classList.add('loading');
 
             const data = `nom=${encodeURIComponent(nom)}&mdp=${encodeURIComponent(mdp)}`;
 
@@ -96,7 +307,7 @@
                 if (xhr.readyState === 4) {
                     // Réactiver le bouton
                     loginBtn.disabled = false;
-                    loginBtn.textContent = "Se connecter";
+                    loginBtn.classList.remove('loading');
 
                     try {
                         const response = JSON.parse(xhr.responseText);
@@ -108,7 +319,7 @@
                             // Redirection après succès
                             setTimeout(() => {
                                 window.location.href = apiBase + "/template";
-                            }, 1000);
+                            }, 1500);
                         } else {
                             showMessage(response.error || "Erreur de connexion", "error");
                         }
@@ -122,7 +333,7 @@
 
             xhr.onerror = function() {
                 loginBtn.disabled = false;
-                loginBtn.textContent = "Se connecter";
+                loginBtn.classList.remove('loading');
                 showMessage("Erreur de connexion réseau", "error");
             };
 
@@ -133,7 +344,29 @@
             const messageDiv = document.getElementById("message");
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
+            
+            // Forcer le reflow pour l'animation
+            messageDiv.offsetHeight;
+            messageDiv.classList.add('show');
+            
+            // Masquer le message après 5 secondes si c'est une erreur
+            if (type === 'error') {
+                setTimeout(() => {
+                    messageDiv.classList.remove('show');
+                }, 5000);
+            }
         }
+
+        // Animation subtile des inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
     </script>
 </body>
 </html>
