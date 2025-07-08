@@ -6,9 +6,10 @@ class TypePretController
 {
     public static function goIndex()
     {
-        Flight::render('TypePret/index');
+        $page = 'TypePret/index';
+        Flight::render('template/index', ['page' => $page]);
     }
-    
+
     public static function getAll()
     {
         $typesPret = TypePret::getAll();
@@ -28,7 +29,8 @@ class TypePretController
         Flight::json(['message' => 'Type de prêt ajouté', 'id' => $id]);
     }
 
-    public static function update($id) {
+    public static function update($id)
+    {
         $data = Flight::request()->data;
         TypePret::update($id, (object)$data);
         Flight::json(['message' => 'Type de prêt modifié']);

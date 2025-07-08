@@ -14,11 +14,9 @@ class ClientController
     public static function listeAvecPrets()
     {
         try {
-            // Rendre la vue HTML directement
-            Flight::render('clients/liste_avec_prets');
-            
+            $page = 'clients/liste_avec_prets';
+            Flight::render('template/index', ['page' => $page]);
         } catch (Exception $e) {
-            // En cas d'erreur, afficher une page d'erreur
             echo "Erreur lors de l'affichage de la page : " . $e->getMessage();
         }
     }
@@ -28,7 +26,7 @@ class ClientController
     {
         try {
             $clients = Client::getAllWithLoans();
-            
+
             // Formatage des données pour la réponse JSON
             $response = [
                 'status' => 'success',
@@ -37,9 +35,8 @@ class ClientController
                 ],
                 'timestamp' => date('Y-m-d H:i:s')
             ];
-            
+
             Flight::json($response);
-            
         } catch (Exception $e) {
             // En cas d'erreur, retourner un JSON d'erreur
             Flight::json([

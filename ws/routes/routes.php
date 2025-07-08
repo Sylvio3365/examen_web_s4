@@ -7,13 +7,15 @@ require_once __DIR__ . '/../controllers/ClientController.php';
 require_once __DIR__ . '/../controllers/RemboursementController.php';
 require_once __DIR__ . '/../controllers/PretStatutController.php';
 require_once __DIR__ . '/../controllers/SortantController.php';
+require_once __DIR__ . '/../controllers/TemplateController.php';
+
 
 Flight::route('GET /typeprets', ['TypePretController', 'getAll']);
 Flight::route('GET /typeprets/@id', ['TypePretController', 'getById']);
 Flight::route('POST /typeprets', ['TypePretController', 'create']);
 Flight::route('PUT /typeprets/@id', ['TypePretController', 'update']);
 Flight::route('DELETE /typeprets/@id', ['TypePretController', 'delete']);
-Flight::route('GET /', ['TypePretController', 'goIndex']);
+Flight::route('GET /typepret', ['TypePretController', 'goIndex']);
 
 Flight::route('GET /pret', ['PretController', 'goIndex']);
 Flight::route('GET /formFond', ['FondController', 'formulaireFond']);
@@ -21,7 +23,7 @@ Flight::route('POST /ajouterFond', ['FondController', 'insertFond']);
 Flight::route('GET /capital', ['FondController', 'getCapitalActuel']);
 
 Flight::route('GET /interets', ['PretController', 'goInteret']);
-Flight::route('POST /api/interets', ['PretController', 'interets']); 
+Flight::route('POST /api/interets', ['PretController', 'interets']);
 
 Flight::route('GET /pret/generate-pdf/@id', ['PretController', 'generatePdf']);
 Flight::route('GET /pret/@id/pdf', ['PretController', 'generatePdf']);
@@ -45,3 +47,5 @@ Flight::route('GET /pendingPret', ['PretController', 'pendingPret']);
 Flight::route('GET /pendingPretPage', ['PretController', 'goPendingPage']);
 Flight::route('POST /validerPret', ['PretController', 'validerPret']);
 Flight::route('POST /annulerPret', ['PretController', 'annulerPret']);
+
+Flight::route('GET /template', ['TemplateController', 'template']);

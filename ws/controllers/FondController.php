@@ -6,7 +6,8 @@ class FondController
 {
     public static function formulaireFond()
     {
-        Flight::render('Fond/ajouterFond');
+        $page = 'Fond/ajouterFond'; // Chemin relatif à `views/`
+        Flight::render('template/index', ['page' => $page]);
     }
 
     public static function insertFond()
@@ -28,26 +29,23 @@ class FondController
 
             $id = Fond::insertFond($data);
             Flight::json(['message' => 'Fond ajouté avec succès', 'id' => $id]);
-
         } catch (Exception $e) {
             Flight::json(['error' => 'Erreur serveur: ' . $e->getMessage()], 500);
         }
     }
 
-    public static function getCapitalActuel(){
+    public static function getCapitalActuel()
+    {
         try {
             $sommeMontantEntrant = Fond::getSommeMontantEntrant();
             $sommeMontantSortant = Fond::getSommeMontantSortant();
-    
-            $TotalMontantActuel = $sommeMontantEntrant - $sommeMontantSortant; 
-    
+
+            $TotalMontantActuel = $sommeMontantEntrant - $sommeMontantSortant;
+
             // Renvoyer le résultat au frontend
             Flight::json(['capital' => $TotalMontantActuel]);
-    
         } catch (Exception $e) {
             Flight::json(['error' => 'Erreur serveur: ' . $e->getMessage()], 500);
         }
     }
-    
-
 }

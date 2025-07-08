@@ -11,12 +11,14 @@ class PretController
 {
     public static function goIndex()
     {
-        Flight::render('pret/index');
+        $page = 'pret/index';
+        Flight::render('template/index', ['page' => $page]);
     }
 
     public static function goInteret()
     {
-        Flight::render('pret/interets');
+        $page = 'pret/interets';
+        Flight::render('template/index', ['page' => $page]);
     }
 
     public static function interets()
@@ -80,36 +82,36 @@ class PretController
             if (!$pret) {
                 throw new Exception("Pret introuvable");
             }
-    
+
             // Verifier et initialiser misyassurance si non defini
             if (!isset($pret['misyassurance'])) {
                 $pret['misyassurance'] = 0;
             }
-    
+
             $client = Client::getById($pret['idclient']);
             if (!$client) {
                 throw new Exception("Client introuvable");
             }
-    
+
             // Recuperer le type de pret
             $typePret = [
                 'nom' => $pret['type_pret'],
                 'taux_annuel' => $pret['taux_annuel'],
                 'taux_assurance' => $pret['taux_assurance'] ?? 0
             ];
-    
+
             // Calculer l'amortissement
             $amortissement = Pret::calculerAmortissement($idPret);
-    
+
             // Recuperer les remboursements depuis la base
             $remboursements = Remboursement::getByPretId($idPret);
-    
+
             // Creer le PDF
-            $pdf = new PdfHelper(utf8_decode(('Pret N°'). $pret['idpret']), __DIR__ . '/../public/images/logo.png');
+            $pdf = new PdfHelper(utf8_decode(('Pret N°') . $pret['idpret']), __DIR__ . '/../public/images/logo.png');
             $pdf->AliasNbPages();
             $pdf->AddPage();
 
-    
+
             // 1. Informations de l'etablissement
             $pdf->SectionTitle(utf8_decode('1. Informations de l\'etablissement financier'));
             $pdf->InfoLine('Nom:', 'Banque SMD');
@@ -119,7 +121,7 @@ class PretController
             $pdf->InfoLine('NIF:', '1234567890');
             $pdf->InfoLine('STAT:', '987654321');
             $pdf->Ln(10);
-    
+
             // 2. Informations du client
             $pdf->SectionTitle(utf8_decode('2. Informations du client'));
             $pdf->InfoLine('Nom complet:', utf8_decode($client['prenom'] . ' ' . $client['nom']));
@@ -129,7 +131,7 @@ class PretController
             $pdf->InfoLine('Email:', $client['email'] ?? 'Non renseigne');
             $pdf->InfoLine('N° Client:', $client['idclient']);
             $pdf->Ln(10);
-    
+
             // 3. Details du pret
             $pdf->SectionTitle(utf8_decode('3. Details du pret'));
             $pdf->InfoLine('Num Pret:', $pret['idpret']);
@@ -142,15 +144,15 @@ class PretController
             $pdf->InfoLine('Delai de grace:', $pret['delais'] . ' mois');
             $pdf->InfoLine('Assurance incluse:', $pret['misyassurance'] ? 'Oui' : 'Non');
             $pdf->Ln(10);
-    
+
             // 4. Modalites financières
             $pdf->SectionTitle(utf8_decode('4. Modalites financières'));
-            
+
             // Calcul des totaux
             $totalInterets = array_sum(array_column($amortissement, 'interet'));
             $totalAssurance = array_sum(array_column($amortissement, 'assurance'));
             $totalRemboursement = $pret['montant'] + $totalInterets + $totalAssurance;
-            
+
             // Trouver la première mensualite après delai
             $mensualite = 0;
             foreach ($amortissement as $ligne) {
@@ -159,13 +161,13 @@ class PretController
                     break;
                 }
             }
-            
+
             $pdf->InfoLine('Mensualite (hors delai):', number_format($mensualite, 0, ',', ' ') . ' MGA');
             $pdf->InfoLine('Total des interets:', number_format($totalInterets, 0, ',', ' ') . ' MGA');
             $pdf->InfoLine('Total de l\'assurance:', number_format($totalAssurance, 0, ',', ' ') . ' MGA');
             $pdf->InfoLine('Montant total a rembourser:', number_format($totalRemboursement, 0, ',', ' ') . ' MGA');
             $pdf->Ln(10);
-    
+
             // 5. Periode
             $pdf->SectionTitle(utf8_decode('5. Periode de remboursement'));
             $dateDebut = date('d/m/Y', strtotime($pret['date_creation'] ?? 'now'));
@@ -173,22 +175,22 @@ class PretController
             $pdf->InfoLine('Date de debut:', $dateDebut);
             $pdf->InfoLine('Date de fin prevue:', $dateFin);
             $pdf->Ln(10);
-    
+
             // 6. Tableau d'amortissement
             $pdf->SectionTitle(utf8_decode('6. Tableau d\'amortissement'));
             $pdf->SetFont('Arial', '', 8);
-            
+
             // En-tetes du tableau
             $headers = [
-                'Mois', 
-                'Annee', 
-                'echeance', 
-                'Interet', 
-                'Capital', 
+                'Mois',
+                'Annee',
+                'echeance',
+                'Interet',
+                'Capital',
                 'Assurance',
                 'Reste du'
             ];
-            
+
             // Preparation des donnees
             $data = [];
             foreach ($amortissement as $ligne) {
@@ -202,13 +204,13 @@ class PretController
                     number_format($ligne['capital_restant'], 0, ',', ' ')
                 ];
             }
-    
+
             // Affichage du tableau
             $pdf->SetWidths([10, 10, 25, 25, 25, 25, 30]); // Largeurs des colonnes
             $pdf->SetAligns(['C', 'C', 'R', 'R', 'R', 'R', 'R']); // Alignements
             $pdf->ImprovedTable($headers, $data);
             $pdf->Ln(10);
-    
+
 
             // Signature
             $pdf->SetFont('Arial', 'I', 10);
@@ -220,10 +222,9 @@ class PretController
             $pdf->Cell(0, 6, 'Le Client', 0, 1, 'R');
             $pdf->Cell(0, 6, '_________________________', 0, 1, 'R');
             $pdf->Cell(0, 6, utf8_decode($client['prenom'] . ' ' . $client['nom']), 0, 1, 'R');
-    
+
             // Generation du PDF
             $pdf->Output('I', 'pret_' . $pret['idpret'] . '.pdf');
-    
         } catch (Exception $e) {
             Flight::halt(500, 'Erreur lors de la generation du PDF: ' . $e->getMessage());
         }
@@ -242,7 +243,8 @@ class PretController
 
     public static function goPendingPage()
     {
-        Flight::render('pret/attentePret');
+        $page = 'pret/attentePret';
+        Flight::render('template/index', ['page' => $page]);
     }
 
     public static function validerPret()
