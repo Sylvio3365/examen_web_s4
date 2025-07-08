@@ -1,6 +1,6 @@
-<?php
+ <?php
 $apiBase = "http://localhost/examen_web_s4/ws";
-?>
+ ?> 
 
 <!DOCTYPE html>
 <html lang="en">
@@ -76,12 +76,12 @@ $apiBase = "http://localhost/examen_web_s4/ws";
                             Voir les intérêts
                         </a>
 
-                        <a class="nav-link" href="<?php echo $apiBase ?>/clients/avec-prets">
+                        <a class="nav-link" href="<?php echo $apiBase ?>/clients_pret">
                             <div class="sb-nav-link-icon"><i class="fas fa-file-pdf"></i></div>
                             Voir PDF prêt
                         </a>
 
-                        <a class="nav-link" href="<?php echo $apiBase ?>/remboursements/attente/liste">
+                        <a class="nav-link" href="<?php echo $apiBase ?>/remboursements_attente">
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
                             Valider remboursement
                         </a>

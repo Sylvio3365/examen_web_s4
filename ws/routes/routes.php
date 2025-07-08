@@ -30,7 +30,7 @@ Flight::route('GET /pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('GET /api/pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('POST /api/interets', ['PretController', 'interets']);
 
-Flight::route('GET /clients/avec-prets', ['ClientController', 'listeAvecPrets']);
+Flight::route('GET /clients_pret', ['ClientController', 'listeAvecPrets']);
 Flight::route('GET /api/clients/avec-prets', ['ClientController', 'getClientsAvecPretsJson']);
 
 Flight::route('POST /prets/add', ['PretController', 'addPret']);
@@ -40,7 +40,7 @@ Flight::route('GET /clients', ['ClientController', 'getAll']);
 Flight::route('GET /teste', ['PretController', 'addRemboursement']);
 
 Flight::route('GET /remboursements/attente', ['RemboursementController', 'getEnAttente']);
-Flight::route('GET /remboursements/attente/liste', ['RemboursementController', 'liste']);
+Flight::route('GET /remboursements_attente', ['RemboursementController', 'liste']);
 Flight::route('POST /remboursements/@id/statut', ['RemboursementController', 'setStatus']);
 Flight::route('POST /remboursements/@id/statut', ['RemboursementController', 'setStatus']);
 Flight::route('GET /pendingPret', ['PretController', 'pendingPret']);
