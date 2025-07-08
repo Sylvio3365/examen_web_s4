@@ -239,4 +239,32 @@ class Pret
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function listPendingPret()
+    {
+        $db = getDB();
+        $sql = '
+        SELECT 
+            c.nom AS nom_client,
+            tp.nom AS nom_typepret,
+            ps.date_modif,
+            s.valeur AS statut_valeur,
+            ps.idpret,
+            p.montant
+        FROM (
+            SELECT *,
+                   ROW_NUMBER() OVER (PARTITION BY idpret ORDER BY date_modif DESC, idpret_statut DESC) AS rn
+            FROM pret_statut
+        ) ps
+        JOIN pret p ON ps.idpret = p.idpret
+        JOIN client c ON p.idclient = c.idclient
+        JOIN typepret tp ON p.idtypepret = tp.idtypepret
+        JOIN statut s ON ps.idstatut = s.idstatut
+        WHERE ps.rn = 1 AND ps.idstatut = 1
+    ';
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
