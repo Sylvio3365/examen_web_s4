@@ -101,7 +101,7 @@ class PretController
             $amortissement = Pret::calculerAmortissement($idPret);
 
             // Créer le PDF
-            $pdf = new PdfHelper(utf8_decode('Contrat de Prêt'), __DIR__ . '/../public/images/logo.png');
+            $pdf = new PdfHelper(utf8_decode('Prêt'), __DIR__ . '/../public/images/logo.png');
             $pdf->AliasNbPages();
             $pdf->AddPage();
 
