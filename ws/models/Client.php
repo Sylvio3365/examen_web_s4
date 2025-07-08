@@ -66,11 +66,16 @@ class Client
 
         foreach ($clients as &$client) {
             $stmt = $db->prepare("
-                SELECT p.*, tp.nom AS type_pret
+                SELECT p.*, tp.nom AS type_pret,
+                       (SELECT ps.date_modif 
+                        FROM pret_statut ps 
+                        WHERE ps.idpret = p.idpret 
+                        ORDER BY ps.date_modif DESC 
+                        LIMIT 1) AS derniere_modification
                 FROM pret p
                 JOIN typepret tp ON p.idtypepret = tp.idtypepret
                 WHERE p.idclient = ?
-                ORDER BY p.date_creation DESC
+                ORDER BY derniere_modification DESC
             ");
             $stmt->execute([$client['idclient']]);
             $client['prets'] = $stmt->fetchAll(PDO::FETCH_ASSOC);

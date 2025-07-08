@@ -25,7 +25,12 @@ Flight::route('GET /pret/generate-pdf/@id', ['PretController', 'generatePdf']);
 Flight::route('GET /pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('GET /api/pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('POST /api/interets', ['PretController', 'interets']);
+
+// Route pour afficher la page liste des clients avec prêts
 Flight::route('GET /clients/avec-prets', ['ClientController', 'listeAvecPrets']);
+
+// Route pour l'API JSON des clients avec prêts
+Flight::route('GET /api/clients/avec-prets', ['ClientController', 'getClientsAvecPretsJson']);
 
 Flight::route('POST /prets/add', ['PretController', 'addPret']);
 

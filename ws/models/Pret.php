@@ -79,8 +79,10 @@ class Pret
     public static function getById($id)
     {
         $db = getDB();
-        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
-        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
+        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance, p.misyassurance 
+                              FROM pret p 
+                              JOIN typepret tp ON p.idtypepret = tp.idtypepret 
+                              WHERE p.idpret = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -148,25 +150,33 @@ class Pret
     public static function calculerAmortissement($idPret)
     {
         $pret = self::getById($idPret);
+        if (!$pret) {
+            throw new Exception("Prêt introuvable");
+        }
+    
         $tauxMensuel = $pret['taux_annuel'] / 100 / 12;
         $duree = $pret['duree'];
         $montant = $pret['montant'];
         $delais = $pret['delais'] ?? 0;
-
+        
+        // Gestion de l'assurance avec valeur par défaut si misyassurance n'existe pas
+        $hasAssurance = isset($pret['misyassurance']) ? ($pret['misyassurance'] == 1) : false;
+        $assuranceMensuelle = $hasAssurance ? ($montant * ($pret['taux_assurance'] ?? 0) / 100 / $duree) : 0;
+    
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
-
+    
         $tableau = [];
         $capitalRestant = $montant;
-
+    
         for ($i = 1; $i <= $duree + $delais; $i++) {
             if ($i <= $delais) {
                 $tableau[] = [
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
-                    'echeance' => 0,
-                    'echeance' => 0,
+                    'echeance' => $assuranceMensuelle,
                     'interet' => 0,
                     'amortissement' => 0,
+                    'assurance' => $assuranceMensuelle,
                     'capital_restant' => $capitalRestant
                 ];
             } else {
@@ -174,19 +184,19 @@ class Pret
                 $interet = $capitalRestant * $tauxMensuel;
                 $amortissement = $mensualite - $interet;
                 $capitalRestant -= $amortissement;
-
+    
                 $tableau[] = [
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
-                    'echeance' => $mensualite,
-                    'echeance' => $mensualite,
+                    'echeance' => $mensualite + $assuranceMensuelle,
                     'interet' => $interet,
                     'amortissement' => $amortissement,
+                    'assurance' => $assuranceMensuelle,
                     'capital_restant' => max($capitalRestant, 0)
                 ];
             }
         }
-
+    
         return $tableau;
     }
 
