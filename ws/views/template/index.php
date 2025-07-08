@@ -15,12 +15,18 @@ $apiBase = "http://localhost/examen_web_s4/ws";
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="public/template/css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .bg-bleu-fonce {
+            background-color: #1F2937;
+            /* bleu foncé classique */
+        }   
+    </style>
 </head>
 
 <body class="sb-nav-fixed">
     <!-- NAVBAR -->
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand ps-3" href="index.html">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-bleu-fonce">
+        <a class="navbar-brand ps-3" href="#">
             <img src="public/images/mety.png" alt="Logo" style="height: 80px; width: 80px; margin-left: 40px; margin-top: 5px;">
         </a>
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
@@ -53,9 +59,9 @@ $apiBase = "http://localhost/examen_web_s4/ws";
 
                         <div class="sb-sidenav-menu-heading">Menu principal</div>
 
-                        <a class="nav-link" href="index.html">
+                        <a class="nav-link" href="<?php echo $apiBase ?>/acceuil">
                             <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Tableau de bord
+                            Accueil
                         </a>
 
                         <a class="nav-link" href="<?= $apiBase ?>/formFond">

@@ -235,7 +235,7 @@
                         if (xhr.status === 200 && response.success) {
                             showMessage("Connexion réussie ! Redirection...", "success");
                             setTimeout(() => {
-                                window.location.href = apiBase + "/template";
+                                window.location.href = apiBase + "/acceuil";
                             }, 1500);
                         } else {
                             showMessage(response.error || "Erreur de connexion", "danger");
