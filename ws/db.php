@@ -1,10 +1,10 @@
 <?php
 function getDB()
 {
-    $host = 'localhost';
-    $dbname = 'webSMD';
-    $username = 'root';
-    $password = '';
+    $host = '172.60.0.10';
+    $dbname = 'db_s2_ETU003289';
+    $username = 'ETU003289';
+    $password = 'Rxwey1b7';
 
     try {
         return new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password, [
