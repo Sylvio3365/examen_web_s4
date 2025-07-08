@@ -46,12 +46,12 @@ class PretController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = (object) [
-                'montant'     => $_POST['montant'] ?? null,
-                'duree'       => $_POST['duree'] ?? null,
-                'idtypepret'  => $_POST['idtypepret'] ?? null,
-                'idclient'    => $_POST['idclient'] ?? null,
-                'delais'      => $_POST['delais'] ?? 0
-                'misyassurance' =>
+                'montant'        => $_POST['montant'] ?? null,
+                'duree'          => $_POST['duree'] ?? null,
+                'idtypepret'     => $_POST['idtypepret'] ?? null,
+                'idclient'       => $_POST['idclient'] ?? null,
+                'delais'         => $_POST['delais'] ?? 0,
+                'misyassurance'  => isset($_POST['assurance']) && $_POST['assurance'] == 1 ? 1 : 0
             ];
 
             try {
@@ -129,7 +129,7 @@ class PretController
             // Modalités financières
             $pdf->SectionTitle(utf8_decode('Modalités financières'));
             $totalInterets = array_sum(array_column($amortissement, 'interet'));
-            
+
             // Trouver la première mensualité non-nulle (après le délai)
             $mensualite = 0;
             foreach ($amortissement as $ligne) {
@@ -138,7 +138,7 @@ class PretController
                     break;
                 }
             }
-            
+
             $pdf->InfoLine(utf8_decode('Mensualité fixe:'), number_format($mensualite, 2, ',', ' ') . ' MGA');
             $pdf->InfoLine(utf8_decode('Total des intérêts:'), number_format($totalInterets, 2, ',', ' ') . ' MGA');
             $pdf->InfoLine(utf8_decode('Montant total à rembourser:'), number_format($pret['montant'] + $totalInterets, 2, ',', ' ') . ' MGA');
