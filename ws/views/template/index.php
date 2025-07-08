@@ -38,44 +38,54 @@ $apiBase = "http://localhost/examen_web_s4/ws";
             </li>
         </ul>
     </nav>
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Menu Principal</div>
+
                         <a class="nav-link" href="index.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Tableau de bord
                         </a>
+
                         <a class="nav-link" href="<?php echo $apiBase ?>/formFond">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
                             Fonds
                         </a>
+
                         <a class="nav-link" href="<?php echo $apiBase ?>/typepret">
                             <div class="sb-nav-link-icon"><i class="fas fa-percent"></i></div>
                             Types de prêt
                         </a>
-                        <a class="nav-link" href="" data-bs-toggle="collapse" data-bs-target="#collapsePret"
-                            aria-expanded="false">
-                            <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-usd"></i></div>
-                            Gestion de prêts
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+
+                        <a class="nav-link" href="<?php echo $apiBase ?>/pret">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-signature"></i></div>
+                            Formulaire prêt
                         </a>
-                        <div class="collapse" id="collapsePret" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="<?php echo $apiBase ?>/pret"><i
-                                        class="fas fa-file-signature me-2"></i>Formulaire prêt</a>
-                                <a class="nav-link" href="<?php echo $apiBase ?>/pendingPretPage"><i class="fas fa-list me-2"></i>Liste des
-                                    prêts à valider</a>
-                                <a class="nav-link" href="<?php echo $apiBase ?>/interets"><i class="fas fa-chart-line me-2"></i>Voir les
-                                    intérêts</a>
-                                <a class="nav-link" href="<?php echo $apiBase ?>/clients/avec-prets"><i class="fas fa-file-pdf me-2"></i>Voir PDF
-                                    prêt</a>
-                                <a class="nav-link" href="<?php echo $apiBase ?>/remboursements/attente/liste"><i
-                                        class=" fas fa-check-circle me-2"></i>Valider remboursement</a>
-                            </nav>
-                        </div>
+
+                        <a class="nav-link" href="<?php echo $apiBase ?>/pendingPretPage">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            Liste des prêts à valider
+                        </a>
+
+                        <a class="nav-link" href="<?php echo $apiBase ?>/interets">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                            Voir les intérêts
+                        </a>
+
+                        <a class="nav-link" href="<?php echo $apiBase ?>/clients/avec-prets">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-pdf"></i></div>
+                            Voir PDF prêt
+                        </a>
+
+                        <a class="nav-link" href="<?php echo $apiBase ?>/remboursements/attente/liste">
+                            <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
+                            Valider remboursement
+                        </a>
+
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
@@ -84,12 +94,11 @@ $apiBase = "http://localhost/examen_web_s4/ws";
                 </div>
             </nav>
         </div>
+
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <?php if (isset($page)) {
-                        include(__DIR__ . '/../' . $page . '.php');
-                    } ?>
+                    <?php if (isset($page)) include(__DIR__ . '/../' . $page . '.php'); ?>
                 </div>
             </main>
             <footer class="py-4 bg-light mt-auto">
@@ -106,6 +115,7 @@ $apiBase = "http://localhost/examen_web_s4/ws";
             </footer>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="public/template/js/scripts.js"></script>
@@ -116,14 +126,6 @@ $apiBase = "http://localhost/examen_web_s4/ws";
                 const linkHref = link.href ? link.href.replace(/\/$/, '') : null;
                 if (linkHref && current === linkHref) {
                     link.classList.add('active');
-                    const collapse = link.closest('.collapse');
-                    if (collapse) {
-                        collapse.classList.add('show');
-                        const parent = collapse.previousElementSibling;
-                        if (parent && parent.classList.contains('nav-link')) {
-                            parent.classList.add('active');
-                        }
-                    }
                 }
             });
         });
