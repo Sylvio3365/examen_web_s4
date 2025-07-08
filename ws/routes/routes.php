@@ -9,7 +9,7 @@ require_once __DIR__ . '/../controllers/PretStatutController.php';
 require_once __DIR__ . '/../controllers/SortantController.php';
 require_once __DIR__ . '/../controllers/TemplateController.php';
 require_once __DIR__ . '/../controllers/LoginController.php';
-
+require_once __DIR__ . '/../controllers/MontantController.php';
 
 Flight::route('GET /typeprets', ['TypePretController', 'getAll']);
 Flight::route('GET /typeprets/@id', ['TypePretController', 'getById']);
@@ -52,3 +52,6 @@ Flight::route('GET /template', ['TemplateController', 'template']);
 Flight::route('GET /', ['LoginController', 'formLogin']);
 Flight::route('POST /login', ['LoginController', 'loginPost']);
 
+Flight::route('GET /montant', ['MontantController', 'getMontantParPeriode']);
+
+Flight::route('GET /montanttotal', ['MontantController', 'montanttotal']);

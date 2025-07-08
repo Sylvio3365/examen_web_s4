@@ -13,6 +13,7 @@ class Pret
     public static function insertIntoRemboursement($idpret)
     {
         $pret = Pret::getById($idpret);
+
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
@@ -69,9 +70,10 @@ class Pret
 
         foreach ($tableau as $ligne) {
             $id = Remboursement::insert($ligne);
-            Remboursement::insertStatut($id, 1);
+            Remboursement::insertStatut($id, 2);
+            $remboursement = Remboursement::findById($id);
+            Remboursement::insertEntrant($remboursement['mois'], $remboursement['annee'], $remboursement['echeance'], 3);
         }
-
         return $tableau;
     }
 
@@ -152,32 +154,32 @@ class Pret
         if (!$pret) {
             throw new Exception("Prêt introuvable");
         }
-    
+
         $tauxMensuel = $pret['taux_annuel'] / 100 / 12;
         $duree = $pret['duree'];
         $montant = $pret['montant'];
         $delais = $pret['delais'] ?? 0;
-        
+
         // Gestion de l'assurance avec valeur par défaut si misyassurance n'existe pas
         $hasAssurance = isset($pret['misyassurance']) ? ($pret['misyassurance'] == 1) : false;
         $assuranceMensuelle = $hasAssurance ? ($montant * ($pret['taux_assurance'] ?? 0) / 100 / $duree) : 0;
-    
+
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
-    
+
         $tableau = [];
         $capitalRestant = $montant;
-        
+
         // Récupérer la date de création du prêt ou utiliser la date actuelle
         $dateCreation = isset($pret['date_creation']) ? $pret['date_creation'] : date('Y-m-d');
         $timestamp = strtotime($dateCreation);
         $moisDepart = (int)date('n', $timestamp);
         $anneeDepart = (int)date('Y', $timestamp);
-    
+
         for ($i = 1; $i <= $duree + $delais; $i++) {
             // Calculer le mois et l'année en fonction de la date de création
             $moisCourant = (($moisDepart + $i - 2) % 12) + 1;
             $anneeCourante = $anneeDepart + floor(($moisDepart + $i - 2) / 12);
-            
+
             if ($i <= $delais) {
                 $tableau[] = [
                     'mois' => $moisCourant,
@@ -193,7 +195,7 @@ class Pret
                 $interet = $capitalRestant * $tauxMensuel;
                 $amortissement = $mensualite - $interet;
                 $capitalRestant -= $amortissement;
-    
+
                 $tableau[] = [
                     'mois' => $moisCourant,
                     'annee' => $anneeCourante,
@@ -205,7 +207,7 @@ class Pret
                 ];
             }
         }
-    
+
         return $tableau;
     }
 
@@ -233,7 +235,7 @@ class Pret
                 AND (r.annee < YEAR(:dateFin) OR (r.annee = YEAR(:dateFin) AND r.mois <= MONTH(:dateFin)))
                 GROUP BY r.annee, r.mois
                 ORDER BY r.annee, r.mois";
-    
+
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':dateDebut' => $dateDebut,
@@ -264,7 +266,7 @@ class Pret
             WHERE latest_status.idstatut = 2
             GROUP BY r.annee, r.mois
             ORDER BY r.annee, r.mois";
-    
+
         $stmt = $db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

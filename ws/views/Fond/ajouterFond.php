@@ -1,147 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un fond</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        .form-section {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 16px;
-            border: 2px solid #e1e8ed;
-            border-radius: 25px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-right: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        .message {
-            margin-top: 20px;
-            color: #7f8c8d;
-            font-size: 1rem;
-        }
-
-        .capital-info {
-            margin-top: 30px;
-            color: #2c3e50;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .form-group input {
-                padding: 12px 15px;
-                font-size: 14px;
-            }
-        }
-    </style>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Ajouter un fond</h1>
-            <p>Gestion des fonds de l'établissement financier</p>
+
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <!-- En-tête -->
+        <div class="card p-4 mb-4 text-center">
+            <h2 class="mb-2">Ajouter un fond</h2>
+            <p class="text-muted">Gestion des fonds de l'établissement financier</p>
         </div>
 
-        <div class="form-section">
-            <div class="form-group">
-                <input type="number" id="montant" class="form-control" placeholder="Montant du fond (Ar)" step="0.01" required>
+        <!-- Formulaire -->
+        <div class="card p-4 mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input type="number" id="montant" class="form-control" placeholder="Montant du fond (Ar)" step="0.01" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="date" id="date_" class="form-control" required>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="date" id="date_" class="form-control" required>
+            <div class="mt-4 text-end">
+                <button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
             </div>
-            <button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
-
-            <p id="message" class="message"></p>
+            <div id="message" class="mt-3"></div>
         </div>
 
-        <div class="capital-info">
-            Capital actuel disponible : <span id="capital">...</span> Ar
+        <!-- Capital disponible -->
+        <div class="card p-4">
+            <h5 class="mb-0">Capital actuel disponible : <span id="capital">...</span> Ar</h5>
         </div>
     </div>
 
@@ -151,9 +47,10 @@
         function ajouterFond() {
             const montant = document.getElementById("montant").value;
             const date_ = document.getElementById("date_").value;
+            const messageDiv = document.getElementById("message");
 
             if (!montant || !date_) {
-                document.getElementById("message").textContent = "Veuillez remplir tous les champs.";
+                showMessage("Veuillez remplir tous les champs.", "warning");
                 return;
             }
 
@@ -167,16 +64,16 @@
                     try {
                         const response = JSON.parse(xhr.responseText);
                         if (xhr.status === 200) {
-                            document.getElementById("message").textContent = response.message;
+                            showMessage(response.message, "success");
                             document.getElementById("montant").value = "";
                             document.getElementById("date_").value = "";
                             chargerCapital();
                         } else {
-                            document.getElementById("message").textContent = "Erreur: " + (response.error || "Erreur inconnue");
+                            showMessage("Erreur: " + (response.error || "Erreur inconnue"), "danger");
                         }
                     } catch (e) {
-                        document.getElementById("message").textContent = "Erreur de communication avec le serveur";
                         console.error("Erreur parsing JSON:", e);
+                        showMessage("Erreur de communication avec le serveur", "danger");
                     }
                 }
             };
@@ -195,7 +92,14 @@
             xhr.send();
         }
 
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = `<div class="alert alert-${type}" role="alert">${msg}</div>`;
+        }
+
         chargerCapital();
     </script>
+
 </body>
+
 </html>
