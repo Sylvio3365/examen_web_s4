@@ -1,44 +1,44 @@
-<link rel="stylesheet" href="public/css/style_pret.css" />
-    <div class="container">
-        <h2>Simulez votre prêt</h2>
+<link rel="stylesheet" href="<?php echo $apiBase ?>/public/css/style_pret.css" />
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Simulez votre prêt</h2>
 
         <!-- Type de prêt -->
-        <label for="type_pret">Type de prêt</label>
-        <select id="type_pret"></select>
+        <label for="type_pret" class="form-label">Type de prêt</label>
+        <select id="type_pret" class="form-select mb-2"></select>
 
         <!-- Client -->
-        <label for="idclient">Client</label>
-        <select id="idclient">
+        <label for="idclient" class="form-label">Client</label>
+        <select id="idclient" class="form-select mb-2">
             <option value="">-- Choisir un client --</option>
         </select>
 
         <!-- Montant -->
-        <label for="montant">Montant (en Ar)</label>
-        <input type="number" id="montant" step="50" />
-        <input type="range" id="amountRange" step="50" />
+        <label for="montant" class="form-label">Montant (en Ar)</label>
+        <input type="number" id="montant" class="form-control mb-2" step="50" />
+        <input type="range" id="amountRange" class="form-range mb-2" step="50" />
 
         <!-- Durée -->
-        <label for="duree">Durée (mois)</label>
-        <input type="number" id="duree" />
-        <input type="range" id="dureeRange" />
+        <label for="duree" class="form-label">Durée (mois)</label>
+        <input type="number" id="duree" class="form-control mb-2" />
+        <input type="range" id="dureeRange" class="form-range mb-2" />
 
         <!-- Délai -->
-        <label for="delai">Payer après (mois)</label>
-        <input type="number" id="delai" value="0" min="0" max="12" style="width: 60px;" />
+        <label for="delai" class="form-label">Payer après (mois)</label>
+        <input type="number" id="delai" class="form-control mb-2" value="0" min="0" max="12" style="width: 80px;" />
 
         <!-- Assurance -->
-        <label>
-            <input type="checkbox" id="avec_assurance" />
-            Ajouter une assurance (calculée selon le type de prêt)
-        </label>
+        <div class="form-check mb-3">
+            <input type="checkbox" id="avec_assurance" class="form-check-input" />
+            <label for="avec_assurance" class="form-check-label">Ajouter une assurance (calculée selon le type de prêt)</label>
+        </div>
 
         <!-- Résultat -->
         <div class="result-box" id="resultat">
             Mensualité : <span id="echeance">0</span> Ar
         </div>
 
-        <button class="simulate-btn" onclick="calculer()">SIMULER UN PRÊT</button>
-        <button class="simulate-btn" onclick="enregistrerPret()">ENREGISTRER LE PRÊT</button>
+        <button class="btn btn-secondary mt-3" onclick="calculer()">SIMULER UN PRÊT</button>
+        <button class="btn btn-primary mt-3" onclick="enregistrerPret()">ENREGISTRER LE PRÊT</button>
     </div>
 
     <script>
