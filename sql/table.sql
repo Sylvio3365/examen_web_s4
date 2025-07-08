@@ -137,3 +137,14 @@ INSERT INTO
 VALUES ('Prêt'),
     ('Ajout de fonds'),
     ('Remboursement');
+
+CREATE TABLE userEF(
+    idUserEF  INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(50),
+    mdp VARCHAR(40)
+);
+
+INSERT INTO userEF (nom, mdp)
+VALUES ('admin', '1234');
+
+
