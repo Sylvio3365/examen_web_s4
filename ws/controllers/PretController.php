@@ -48,12 +48,12 @@ class PretController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = (object) [
-                'montant'        => $_POST['montant'] ?? null,
-                'duree'          => $_POST['duree'] ?? null,
-                'idtypepret'     => $_POST['idtypepret'] ?? null,
-                'idclient'       => $_POST['idclient'] ?? null,
-                'delais'         => $_POST['delais'] ?? 0,
-                'misyassurance'  => isset($_POST['assurance']) && $_POST['assurance'] == 1 ? 1 : 0
+                'montant' => $_POST['montant'] ?? null,
+                'duree' => $_POST['duree'] ?? null,
+                'idtypepret' => $_POST['idtypepret'] ?? null,
+                'idclient' => $_POST['idclient'] ?? null,
+                'delais' => $_POST['delais'] ?? 0,
+                'misyassurance' => isset($_POST['assurance']) && $_POST['assurance'] == 1 ? 1 : 0
             ];
 
             try {
@@ -129,7 +129,7 @@ class PretController
             $pdf->InfoLine('Adresse:', utf8_decode($client['adresse'] ?? 'Non renseignee'));
             $pdf->InfoLine('Telephone:', $client['telephone'] ?? 'Non renseigne');
             $pdf->InfoLine('Email:', $client['email'] ?? 'Non renseigne');
-            $pdf->InfoLine('N° Client:', $client['idclient']);
+            $pdf->InfoLine('Num Client:', $client['idclient']);
             $pdf->Ln(10);
 
             // 3. Details du pret
@@ -316,6 +316,171 @@ class PretController
             Flight::json(['message' => 'Prêt annulé avec succès']);
         } catch (Exception $e) {
             Flight::json(['error' => 'Erreur lors de l\'annulation: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public static function goComparaisonPage()
+    {
+        $page = 'pret/comparaison';
+        Flight::render('template/index', ['page' => $page]);
+    }
+    public static function getValidatedPrets()
+    {
+        try {
+            $prets = Pret::getAllValidatedPrets();
+    
+            if (empty($prets)) {
+                Flight::json([
+                    'success' => true,
+                    'data' => [],
+                    'message' => 'Aucun prêt validé trouvé'
+                ]);
+                return;
+            }
+    
+            $pretsFormates = array_map(function ($pret) {
+                return [
+                    'idpret' => (int) $pret['idpret'],
+                    'montant' => (float) $pret['montant'],
+                    'duree' => (int) $pret['duree'],
+                    'delais' => (int) $pret['delais'],
+                    'date_validation' => $pret['date_validation'],
+                    'misyassurance' => (int) $pret['misyassurance'],
+                    'client_nom' => $pret['nom'] ?? $pret['client_nom'] ?? '',
+                    'client_prenom' => $pret['prenom'] ?? $pret['client_prenom'] ?? '',
+                    'type_pret' => $pret['type_pret'] ?? $pret['nom_type'] ?? '',
+                    'taux_annuel' => (float) $pret['taux_annuel'],
+                    'taux_assurance' => (float) ($pret['taux_assurance'] ?? 0)
+                ];
+            }, $prets);
+    
+            Flight::json($pretsFormates);
+    
+        } catch (Exception $e) {
+            Flight::json([
+                'error' => 'Erreur lors de la récupération des prêts: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public static function comparerPrets()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if (!isset($data['idpret1']) || !isset($data['idpret2'])) {
+                Flight::json([
+                    'error' => 'Les IDs des prêts sont requis'
+                ], 400);
+                return;
+            }
+
+            $idpret1 = (int) $data['idpret1'];
+            $idpret2 = (int) $data['idpret2'];
+
+            if ($idpret1 === $idpret2) {
+                Flight::json([
+                    'error' => 'Impossible de comparer un prêt avec lui-même'
+                ], 400);
+                return;
+            }
+
+            $comparaison = Pret::comparerPrets($idpret1, $idpret2);
+            Flight::json($comparaison);
+
+        } catch (Exception $e) {
+            Flight::json([
+                'error' => 'Erreur lors de la comparaison: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public static function generateComparisonPdf()
+    {
+        try {
+            $data = Flight::request()->data;
+
+            if (!isset($data->idpret1) || !isset($data->idpret2)) {
+                Flight::halt(400, 'Les IDs des deux prêts sont requis');
+            }
+
+            $comparaison = Pret::comparerPrets($data->idpret1, $data->idpret2);
+
+            // Créer le PDF
+            $pdf = new PdfHelper('Comparaison de Prêts', __DIR__ . '/../public/images/logo.png');
+            $pdf->AliasNbPages();
+            $pdf->AddPage();
+
+            // Titre
+            $pdf->SetFont('Arial', 'B', 16);
+            $pdf->Cell(0, 10, utf8_decode('Analyse Comparative de Prêts'), 0, 1, 'C');
+            $pdf->Ln(10);
+
+            // Informations générales
+            $pdf->SectionTitle('1. Informations des prêts');
+
+            // Prêt 1
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('Prêt N°' . $comparaison['pret1']['idpret']), 0, 1);
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->InfoLine('Client:', utf8_decode($comparaison['pret1']['client_prenom'] . ' ' . $comparaison['pret1']['client_nom']));
+            $pdf->InfoLine('Type:', utf8_decode($comparaison['pret1']['type_pret']));
+            $pdf->InfoLine('Montant:', number_format($comparaison['pret1']['montant'], 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Durée:', $comparaison['pret1']['duree'] . ' mois');
+            $pdf->InfoLine('Taux:', $comparaison['pret1']['taux_annuel'] . '%');
+            $pdf->Ln(5);
+
+            // Prêt 2
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('Prêt N°' . $comparaison['pret2']['idpret']), 0, 1);
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->InfoLine('Client:', utf8_decode($comparaison['pret2']['client_prenom'] . ' ' . $comparaison['pret2']['client_nom']));
+            $pdf->InfoLine('Type:', utf8_decode($comparaison['pret2']['type_pret']));
+            $pdf->InfoLine('Montant:', number_format($comparaison['pret2']['montant'], 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Durée:', $comparaison['pret2']['duree'] . ' mois');
+            $pdf->InfoLine('Taux:', $comparaison['pret2']['taux_annuel'] . '%');
+            $pdf->Ln(10);
+
+            // Métriques de comparaison
+            $pdf->SectionTitle('2. Métriques de rentabilité');
+
+            // Tableau de comparaison
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->Cell(60, 8, 'Métrique', 1, 0, 'C');
+            $pdf->Cell(60, 8, utf8_decode('Prêt N°' . $comparaison['pret1']['idpret']), 1, 0, 'C');
+            $pdf->Cell(60, 8, utf8_decode('Prêt N°' . $comparaison['pret2']['idpret']), 1, 1, 'C');
+
+            $pdf->SetFont('Arial', '', 9);
+            $metriques = [
+                'Revenus totaux' => ['revenus_totaux', 'MGA'],
+                'Rentabilité' => ['rentabilite', '%'],
+                'Ratio risque/rendement' => ['ratio_risque_rendement', ''],
+                'Revenus mensuels moyens' => ['revenus_mensuels_moyens', 'MGA']
+            ];
+
+            foreach ($metriques as $nom => $info) {
+                $pdf->Cell(60, 6, utf8_decode($nom), 1, 0, 'L');
+                $valeur1 = $info[1] == 'MGA' ? number_format($comparaison['pret1'][$info[0]], 0, ',', ' ') : $comparaison['pret1'][$info[0]];
+                $valeur2 = $info[1] == 'MGA' ? number_format($comparaison['pret2'][$info[0]], 0, ',', ' ') : $comparaison['pret2'][$info[0]];
+                $pdf->Cell(60, 6, $valeur1 . ' ' . $info[1], 1, 0, 'R');
+                $pdf->Cell(60, 6, $valeur2 . ' ' . $info[1], 1, 1, 'R');
+            }
+            $pdf->Ln(10);
+
+            // Résultat
+            $pdf->SectionTitle('3. Résultat de l\'analyse');
+            $gagnant = $comparaison['meilleur']['gagnant'] == 'pret1' ?
+                $comparaison['pret1']['idpret'] : $comparaison['pret2']['idpret'];
+
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(0, 8, utf8_decode('Prêt recommandé: N°' . $gagnant), 0, 1);
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(0, 6, utf8_decode('Score: ' . max($comparaison['meilleur']['score1'], $comparaison['meilleur']['score2']) . '/100'), 0, 1);
+
+            $pdf->Output('I', 'comparaison_prets.pdf');
+
+        } catch (Exception $e) {
+            Flight::halt(500, 'Erreur lors de la génération du PDF: ' . $e->getMessage());
         }
     }
 }

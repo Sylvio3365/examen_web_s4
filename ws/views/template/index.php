@@ -85,6 +85,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
                             Valider remboursement
                         </a>
+                        <a class="nav-link" href="<?php echo $apiBase ?>/comparaison">
+                            <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
+                            Comparer 2 simulation
+                        </a>
 
                     </div>
                 </div>

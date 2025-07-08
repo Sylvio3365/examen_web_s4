@@ -52,3 +52,7 @@ Flight::route('GET /template', ['TemplateController', 'template']);
 Flight::route('GET /', ['LoginController', 'formLogin']);
 Flight::route('POST /login', ['LoginController', 'loginPost']);
 
+Flight::route('GET /comparaison', ['PretController', 'goComparaisonPage']);
+Flight::route('GET /api/prets/valides', ['PretController', 'getValidatedPrets']);
+Flight::route('POST /api/prets/comparer', ['PretController', 'comparerPrets']);
+Flight::route('POST /api/prets/comparaison/pdf', ['PretController', 'generateComparisonPdf']);
