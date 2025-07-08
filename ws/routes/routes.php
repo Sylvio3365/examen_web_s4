@@ -5,6 +5,8 @@ require_once __DIR__ . '/../controllers/PretController.php';
 require_once __DIR__ . '/../controllers/FondController.php';
 require_once __DIR__ . '/../controllers/ClientController.php';
 require_once __DIR__ . '/../controllers/RemboursementController.php';
+require_once __DIR__ . '/../controllers/PretStatutController.php';
+require_once __DIR__ . '/../controllers/SortantController.php';
 
 Flight::route('GET /typeprets', ['TypePretController', 'getAll']);
 Flight::route('GET /typeprets/@id', ['TypePretController', 'getById']);
@@ -36,3 +38,7 @@ Flight::route('GET /teste', ['PretController', 'addRemboursement']);
 Flight::route('GET /remboursements/attente', ['RemboursementController', 'getEnAttente']);
 Flight::route('GET /remboursements/attente/liste', ['RemboursementController', 'liste']);
 Flight::route('POST /remboursements/@id/statut', ['RemboursementController', 'setStatus']);
+Flight::route('GET /pendingPret', ['PretController', 'pendingPret']);
+Flight::route('GET /pendingPretPage', ['PretController', 'goPendingPage']);
+Flight::route('POST /validerPret', ['PretController', 'validerPret']);
+Flight::route('POST /annulerPret', ['PretController', 'annulerPret']);
