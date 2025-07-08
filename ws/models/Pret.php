@@ -73,7 +73,7 @@ class Pret
 
         foreach ($tableau as $ligne) {
             $id = Remboursement::insert($ligne);
-            Remboursement::insertStatut($id, 2);
+            Remboursement::insertStatut($id, 1);
             $remboursement = Remboursement::findById($id);
             Remboursement::insertEntrant($remboursement['mois'], $remboursement['annee'], $remboursement['echeance'], 3);
         }
@@ -307,7 +307,7 @@ class Pret
     {
         try {
             $db = getDB();
-            
+
             $sql = "
                 SELECT 
                     p.idpret,
@@ -328,12 +328,11 @@ class Pret
                 WHERE ps.idstatut = 2
                 ORDER BY ps.date_modif DESC
             ";
-            
+
             $stmt = $db->prepare($sql);
             $stmt->execute();
-            
+
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
         } catch (Exception $e) {
             error_log("Erreur dans getAllValidatedPrets: " . $e->getMessage());
             throw new Exception("Erreur lors de la récupération des prêts validés");
@@ -343,22 +342,22 @@ class Pret
     {
         $pret1 = self::getById($idPret1);
         $pret2 = self::getById($idPret2);
-    
+
         if (!$pret1 || !$pret2) {
             throw new Exception("Un ou plusieurs prêts introuvables");
         }
-    
+
         // Récupérer les informations client
         $client1 = Client::getById($pret1['idclient']);
         $client2 = Client::getById($pret2['idclient']);
-    
+
         // Calculer les métriques pour chaque prêt
         $metriques1 = self::calculerMetriquesPret($pret1);
         $metriques2 = self::calculerMetriquesPret($pret2);
-    
+
         // Déterminer le meilleur prêt
         $meilleurPret = self::determinerMeilleurPret($metriques1, $metriques2);
-    
+
         return [
             'pret1' => array_merge($pret1, $metriques1, [
                 'client_nom' => $client1['nom'],

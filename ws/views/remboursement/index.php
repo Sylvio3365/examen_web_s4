@@ -133,7 +133,7 @@
                         <th>Intérêt</th>
                         <th>Assurance</th>
                         <th>Amortissement</th>
-                        <th>Échéance</th>
+                        <th>MensualitÉ</th>
                         <th>Valeur nette</th>
                         <th>Action</th>
                     </tr>
