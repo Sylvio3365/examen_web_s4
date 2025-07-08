@@ -1,28 +1,34 @@
-<!DOCTYPE html>
-<html lang="fr">
+<link rel="stylesheet" href="public/css/style.css">
 
-<head>
-  <meta charset="UTF-8">
-  <title>Gestion des types de prêt</title>
-  <link rel="stylesheet" href="public/css/style.css">
-</head>
+<div class="container">
+  <h1 class="mb-4">Gestion des types de prêt</h1>
 
-<body>
-
-  <h1>Gestion des types de prêt</h1>
-
-  <div>
+  <div class="row g-2 mb-3">
     <input type="hidden" id="idtypepret">
-    <input type="text" id="nom" placeholder="Nom du type">
-    <input type="number" id="taux_annuel" placeholder="Taux annuel (%)" step="0.01">
-    <input type="number" id="montant_min" placeholder="Montant minimum">
-    <input type="number" id="montant_max" placeholder="Montant maximum">
-    <input type="number" id="duree_max" placeholder="Durée max (mois)">
-    <input type="number" id="taux_assurance" placeholder="taux_assurance">
-    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+    <div class="col-md-4">
+      <input type="text" id="nom" class="form-control" placeholder="Nom du type">
+    </div>
+    <div class="col-md-2">
+      <input type="number" id="taux_annuel" class="form-control" placeholder="Taux annuel (%)" step="0.01">
+    </div>
+    <div class="col-md-2">
+      <input type="number" id="montant_min" class="form-control" placeholder="Montant minimum">
+    </div>
+    <div class="col-md-2">
+      <input type="number" id="montant_max" class="form-control" placeholder="Montant maximum">
+    </div>
+    <div class="col-md-2">
+      <input type="number" id="duree_max" class="form-control" placeholder="Durée max (mois)">
+    </div>
+    <div class="col-md-2 mt-2">
+      <input type="number" id="taux_assurance" class="form-control" placeholder="Taux assurance">
+    </div>
+    <div class="col-md-2 mt-2">
+      <button class="btn btn-primary w-100" onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+    </div>
   </div>
 
-  <table id="table-typeprets">
+  <table id="table-typeprets" class="table table-bordered">
     <thead>
       <tr>
         <th>ID</th>
@@ -37,9 +43,10 @@
     </thead>
     <tbody></tbody>
   </table>
+</div>
 
   <script>
-    const apiBase = "http://localhost/examen_web_s4/ws";
+    const apiBase = "<?php echo $apiBase ?>";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -141,7 +148,3 @@
 
     chargerTypePrets();
   </script>
-
-</body>
-
-</html>

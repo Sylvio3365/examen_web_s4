@@ -109,6 +109,25 @@ $apiBase = "http://localhost/examen_web_s4/ws";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="public/template/js/scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const current = window.location.href.split('#')[0].replace(/\/$/, '');
+            document.querySelectorAll('#sidenavAccordion .nav-link[href]').forEach(link => {
+                const linkHref = link.href.split('#')[0].replace(/\/$/, '');
+                if (linkHref && (current === linkHref || current.startsWith(linkHref))) {
+                    link.classList.add('active');
+                    const collapse = link.closest('.collapse');
+                    if (collapse) {
+                        collapse.classList.add('show');
+                        const parent = collapse.previousElementSibling;
+                        if (parent && parent.classList.contains('nav-link')) {
+                            parent.classList.add('active');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

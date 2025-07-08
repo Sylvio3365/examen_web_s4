@@ -1,39 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
+<link rel="stylesheet" href="public/css/style.css">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonds</title>
-</head>
+<div class="container">
+    <h1 class="mb-4">Ajouter un fond à l’établissement financier</h1>
 
-<body>
-    <!DOCTYPE html>
-    <html lang="fr">
+    <div class="mb-3">
+        <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+    </div>
+    <div class="mb-3">
+        <input type="date" id="date_" class="form-control" placeholder="Date du fond" required>
+    </div>
+    <button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Ajout de fond</title>
-        <link rel="stylesheet" href="public/css/style.css">
-    </head>
+    <h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
 
-    <body>
+    <p id="message" class="alert mt-3" role="alert"></p>
+</div>
 
-        <h1>Ajouter un fond à l’établissement financier</h1>
-
-        <div>
-            <input type="number" id="montant" placeholder="Montant du fond" step="0.01" required>
-            <input type="date" id="date_" placeholder="Date du fond" required>
-            <button onclick="ajouterFond()">Ajouter</button>
-        </div>
-
-        <h2>Capital actuel disponible : <span id="capital">...</span> Ar</h2>
-
-
-        <p id="message"></p>
-
-        <script>
-            const apiBase = "http://localhost/examen_web_s4/ws";
+<script>
+    const apiBase = "<?php echo $apiBase ?>";
 
             function ajouterFond() {
                 const montant = document.getElementById("montant").value;
@@ -41,7 +25,9 @@
 
                 // Validation côté client
                 if (!montant || !date_) {
-                    document.getElementById("message").textContent = "Veuillez remplir tous les champs.";
+                    const msg = document.getElementById("message");
+                    msg.textContent = "Veuillez remplir tous les champs.";
+                    msg.className = 'alert alert-danger mt-3';
                     return;
                 }
 
@@ -55,16 +41,21 @@
                         try {
                             const response = JSON.parse(xhr.responseText);
                             console.log(response);
+                            const msg = document.getElementById("message");
                             if (xhr.status === 200) {
-                                document.getElementById("message").textContent = response.message;
+                                msg.textContent = response.message;
+                                msg.className = 'alert alert-success mt-3';
                                 document.getElementById("montant").value = "";
                                 document.getElementById("date_").value = "";
                                 chargerCapital();
                             } else {
-                                document.getElementById("message").textContent = "Erreur: " + (response.error || "Erreur inconnue");
+                                msg.textContent = "Erreur: " + (response.error || "Erreur inconnue");
+                                msg.className = 'alert alert-danger mt-3';
                             }
                         } catch (e) {
-                            document.getElementById("message").textContent = "Erreur de communication avec le serveur";
+                            const msg = document.getElementById("message");
+                            msg.textContent = "Erreur de communication avec le serveur";
+                            msg.className = 'alert alert-danger mt-3';
                             console.error("Erreur parsing JSON:", e);
                         }
                     }
@@ -83,14 +74,6 @@
                 xhr.send();
             }
 
-            chargerCapital();
+    chargerCapital();
 
-        </script>
-
-    </body>
-
-    </html>
-
-</body>
-
-</html>
+</script>

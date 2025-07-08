@@ -1,84 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-  <meta charset="UTF-8">
-  <title>Prêts en attente</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    th,
-    td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f9f9f9;
-    }
-
+<style>
     #message {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 4px;
+        margin-top: 10px;
     }
+</style>
 
-    .success {
-      color: green;
-      background-color: #d4edda;
-      border: 1px solid #c3e6cb;
-    }
+<div class="container">
+  <h1 class="mb-4">Liste des prêts en attente</h1>
 
-    .error {
-      color: red;
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
-    }
-
-    .btn {
-      padding: 5px 10px;
-      margin: 0 2px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-
-    .btn-success {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .btn-danger {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    .btn:hover {
-      opacity: 0.8;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  </style>
-</head>
-
-<body>
-
-  <h1>Liste des prêts en attente</h1>
-
-  <table>
+  <table class="table table-striped" id="liste-prets">
     <thead>
       <tr>
         <th>ID Prêt</th>
@@ -95,11 +24,13 @@
     </tbody>
   </table>
 
-  <p id="message"></p>
+
+  <p id="message" class="alert" role="alert"></p>
+</div>
 
   <script>
-    const apiUrl = "http://localhost/examen_web_s4/ws/pendingPret";
-    const apiBase = "http://localhost/examen_web_s4/ws";
+    const apiUrl = "<?php echo $apiBase ?>/pendingPret";
+    const apiBase = "<?php echo $apiBase ?>";
 
     function chargerPrets() {
       fetch(apiUrl)
@@ -241,12 +172,12 @@
     function afficherMessage(message, type) {
       const messageEl = document.getElementById("message");
       messageEl.textContent = message;
-      messageEl.className = type;
+      messageEl.className = type === 'success' ? 'alert alert-success' : 'alert alert-danger';
       
       // Faire disparaître le message après 5 secondes
       setTimeout(() => {
         messageEl.textContent = "";
-        messageEl.className = "";
+        messageEl.className = 'alert';
       }, 5000);
     }
 
@@ -263,7 +194,3 @@
     // Charger les prêts au démarrage
     chargerPrets();
   </script>
-
-</body>
-
-</html>
