@@ -111,10 +111,10 @@ $apiBase = "http://localhost/examen_web_s4/ws";
     <script src="public/template/js/scripts.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const current = window.location.href.replace(/\/$/, '');
-            document.querySelectorAll('#sidenavAccordion .nav-link').forEach(link => {
-                const linkHref = link.href ? link.href.replace(/\/$/, '') : null;
-                if (linkHref && current === linkHref) {
+            const current = window.location.href.split('#')[0].replace(/\/$/, '');
+            document.querySelectorAll('#sidenavAccordion .nav-link[href]').forEach(link => {
+                const linkHref = link.href.split('#')[0].replace(/\/$/, '');
+                if (linkHref && (current === linkHref || current.startsWith(linkHref))) {
                     link.classList.add('active');
                     const collapse = link.closest('.collapse');
                     if (collapse) {

@@ -1,42 +1,13 @@
 <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
+    #table-remboursements {
+        margin-top: 20px;
+    }
+</style>
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
+<div class="container">
+    <h1 class="mb-4">Liste des remboursements en attente</h1>
 
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        button.valider {
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        button.valider:hover {
-            background-color: darkgreen;
-        }
-    </style>
-
-    <h1>Liste des remboursements en attente</h1>
-
-    <table id="table-remboursements">
+    <table id="table-remboursements" class="table table-striped">
         <thead>
             <tr>
                 <th>ID prêt</th>
@@ -53,6 +24,7 @@
         </thead>
         <tbody></tbody>
     </table>
+</div>
 
     <script>
         const apiBase = "<?php echo $apiBase ?>";
@@ -75,7 +47,7 @@
                             <td>${r.amortissement.toLocaleString('fr-FR')}</td>
                             <td>${r.echeance.toLocaleString('fr-FR')}</td>
                             <td>${r.valeur_nette.toLocaleString('fr-FR')}</td>
-                            <td><button class="valider" onclick="valider(${r.idremboursement})">Valider</button></td>
+                            <td><button class="btn btn-success btn-sm" onclick="valider(${r.idremboursement})">Valider</button></td>
                         `;
                         tbody.appendChild(tr);
                     });

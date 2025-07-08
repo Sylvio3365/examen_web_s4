@@ -1,19 +1,20 @@
 <link rel="stylesheet" href="public/css/style.css">
 
-<h1>Ajouter un fond à l’établissement financier</h1>
+<div class="container">
+    <h1 class="mb-4">Ajouter un fond à l’établissement financier</h1>
 
-<div class="mb-3">
-    <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+    <div class="mb-3">
+        <input type="number" id="montant" class="form-control" placeholder="Montant du fond" step="0.01" required>
+    </div>
+    <div class="mb-3">
+        <input type="date" id="date_" class="form-control" placeholder="Date du fond" required>
+    </div>
+    <button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
+
+    <h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
+
+    <p id="message" class="alert mt-3" role="alert"></p>
 </div>
-<div class="mb-3">
-    <input type="date" id="date_" class="form-control" placeholder="Date du fond" required>
-</div>
-<button class="btn btn-primary" onclick="ajouterFond()">Ajouter</button>
-
-<h2 class="mt-4">Capital actuel disponible : <span id="capital">...</span> Ar</h2>
-
-
-<p id="message" class="mt-3"></p>
 
 <script>
     const apiBase = "<?php echo $apiBase ?>";
@@ -24,7 +25,9 @@
 
                 // Validation côté client
                 if (!montant || !date_) {
-                    document.getElementById("message").textContent = "Veuillez remplir tous les champs.";
+                    const msg = document.getElementById("message");
+                    msg.textContent = "Veuillez remplir tous les champs.";
+                    msg.className = 'alert alert-danger mt-3';
                     return;
                 }
 
@@ -38,16 +41,21 @@
                         try {
                             const response = JSON.parse(xhr.responseText);
                             console.log(response);
+                            const msg = document.getElementById("message");
                             if (xhr.status === 200) {
-                                document.getElementById("message").textContent = response.message;
+                                msg.textContent = response.message;
+                                msg.className = 'alert alert-success mt-3';
                                 document.getElementById("montant").value = "";
                                 document.getElementById("date_").value = "";
                                 chargerCapital();
                             } else {
-                                document.getElementById("message").textContent = "Erreur: " + (response.error || "Erreur inconnue");
+                                msg.textContent = "Erreur: " + (response.error || "Erreur inconnue");
+                                msg.className = 'alert alert-danger mt-3';
                             }
                         } catch (e) {
-                            document.getElementById("message").textContent = "Erreur de communication avec le serveur";
+                            const msg = document.getElementById("message");
+                            msg.textContent = "Erreur de communication avec le serveur";
+                            msg.className = 'alert alert-danger mt-3';
                             console.error("Erreur parsing JSON:", e);
                         }
                     }
