@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -233,6 +234,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -252,6 +254,7 @@
             <button class="btn btn-secondary" id="exportBtn" style="display: none;">
                 Exporter en PDF
             </button>
+
         </div>
 
         <div class="section">
@@ -350,7 +353,7 @@
                 } catch (error) {
                     console.error('Erreur détaillée:', error);
                     this.showMessage('Erreur lors du chargement des prêts: ' + error.message, 'error');
-                    
+
                     // Afficher un message d'erreur plus détaillé dans le tableau
                     const tbody = document.getElementById('pretsTableBody');
                     tbody.innerHTML = `<tr><td colspan="9" class="error">Erreur: ${error.message}</td></tr>`;
@@ -405,7 +408,7 @@
             updateCompareButton() {
                 const compareBtn = document.getElementById('compareBtn');
                 compareBtn.disabled = this.selectedPrets.length !== 2;
-                
+
                 if (this.selectedPrets.length === 2) {
                     compareBtn.textContent = 'Comparer les prêts sélectionnés';
                 } else {
@@ -445,7 +448,7 @@
                     this.renderComparison(result);
                     this.showMessage('Comparaison effectuée avec succès', 'success');
 
-                    document.getElementById('exportBtn').style.display = 'inline-block';
+                    // document.getElementById('exportBtn').style.display = 'inline-block';
 
                 } catch (error) {
                     console.error('Erreur lors de la comparaison:', error);
@@ -549,7 +552,9 @@
                 `;
 
                 document.getElementById('comparisonResult').style.display = 'block';
-                document.getElementById('comparisonResult').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('comparisonResult').scrollIntoView({
+                    behavior: 'smooth'
+                });
             }
 
             async exportPdf() {
@@ -593,13 +598,13 @@
                 this.lastComparison = null;
                 document.getElementById('comparisonResult').style.display = 'none';
                 document.getElementById('exportBtn').style.display = 'none';
-                
+
                 // Décocher toutes les cases et retirer la classe selected-row
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.checked = false;
                     cb.closest('tr').classList.remove('selected-row');
                 });
-                
+
                 this.updateCompareButton();
                 this.showMessage('Sélection réinitialisée', 'success');
             }
@@ -618,4 +623,5 @@
         const comparator = new PretComparator();
     </script>
 </body>
+
 </html>
