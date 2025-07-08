@@ -37,7 +37,7 @@
 
         <!-- Capital disponible -->
         <div class="card p-4">
-            <h5 class="mb-0">Capital actuel disponible : <span id="capital">...</span> Ar</h5>
+            <h5 class="mb-0">Capital actuel disponible : <span id="capital">0</span> Ar</h5>
         </div>
     </div>
     <?php $base_url = Flight::get('base_url'); ?>
