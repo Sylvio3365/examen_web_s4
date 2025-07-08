@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Remboursements en attente</title>
-    <style>
+<style>
         body {
             font-family: sans-serif;
             padding: 20px;
@@ -39,9 +33,6 @@
             background-color: darkgreen;
         }
     </style>
-</head>
-
-<body>
 
     <h1>Liste des remboursements en attente</h1>
 
@@ -64,7 +55,7 @@
     </table>
 
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?php echo $apiBase ?>";
 
         function chargerRemboursementsEnAttente() {
             fetch(apiBase + "/remboursements/attente")
@@ -112,7 +103,3 @@
 
         window.onload = chargerRemboursementsEnAttente;
     </script>
-
-</body>
-
-</html>

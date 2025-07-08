@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des clients avec prêts</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <style>
         .loan-details {
@@ -16,9 +10,7 @@
         .accordion-button:not(.collapsed) {
             background-color: #e9ecef;
         }
-    </style>
-</head>
-<body>
+</style>
     <div class="container mt-4">
         <h2 class="mb-4">Liste des clients avec leurs prêts</h2>
         
@@ -32,7 +24,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?php echo $apiBase ?>";
 
         function ajax(method, url, data, callback) {
             const xhr = new XMLHttpRequest();
@@ -235,5 +227,3 @@
         // Charger les données au démarrage
         document.addEventListener('DOMContentLoaded', chargerClientsAvecPrets);
     </script>
-</body>
-</html>
