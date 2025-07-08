@@ -184,7 +184,7 @@ class PretController
             $headers = [
                 'Mois',
                 'Annee',
-                'echeance',
+                'Mensualite',
                 'Interet',
                 'Capital',
                 'Assurance',

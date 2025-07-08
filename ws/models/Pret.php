@@ -166,12 +166,22 @@ class Pret
     
         $tableau = [];
         $capitalRestant = $montant;
+        
+        // Récupérer la date de création du prêt ou utiliser la date actuelle
+        $dateCreation = isset($pret['date_creation']) ? $pret['date_creation'] : date('Y-m-d');
+        $timestamp = strtotime($dateCreation);
+        $moisDepart = (int)date('n', $timestamp);
+        $anneeDepart = (int)date('Y', $timestamp);
     
         for ($i = 1; $i <= $duree + $delais; $i++) {
+            // Calculer le mois et l'année en fonction de la date de création
+            $moisCourant = (($moisDepart + $i - 2) % 12) + 1;
+            $anneeCourante = $anneeDepart + floor(($moisDepart + $i - 2) / 12);
+            
             if ($i <= $delais) {
                 $tableau[] = [
-                    'mois' => $i,
-                    'annee' => date('Y', strtotime("+$i months")),
+                    'mois' => $moisCourant,
+                    'annee' => $anneeCourante,
                     'echeance' => $assuranceMensuelle,
                     'interet' => 0,
                     'amortissement' => 0,
@@ -185,8 +195,8 @@ class Pret
                 $capitalRestant -= $amortissement;
     
                 $tableau[] = [
-                    'mois' => $i,
-                    'annee' => date('Y', strtotime("+$i months")),
+                    'mois' => $moisCourant,
+                    'annee' => $anneeCourante,
                     'echeance' => $mensualite + $assuranceMensuelle,
                     'interet' => $interet,
                     'amortissement' => $amortissement,
