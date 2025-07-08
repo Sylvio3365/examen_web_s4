@@ -57,3 +57,8 @@ CREATE TABLE remboursements (
 
 INSERT INTO type_pret (nom, taux_interet, duree_mois) VALUES
 ('Prêt professionnel', 5.0, 36);
+
+INSERT INTO pret_statut (idpret, idstatut, date_modif)
+VALUES (1, 1, '2025-07-07 10:30:00');
+
+
