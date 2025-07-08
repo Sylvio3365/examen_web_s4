@@ -9,6 +9,12 @@ class LoginController
         Flight::render('login/login');
     }
 
+    public static function acceuil()
+    {
+        $page = 'acceuil/index';
+        Flight::render('template/index', ['page' => $page]);
+    }
+
     public static function loginPost()
     {
         // Vérifier la méthode HTTP
@@ -37,7 +43,6 @@ class LoginController
                 $_SESSION['user_id'] = $user['id'] ?? null;
                 $_SESSION['username'] = $user['nom'];
                 $_SESSION['logged_in'] = true;
-
                 Flight::json([
                     'success' => true,
                     'message' => 'Connexion réussie',
@@ -61,5 +66,4 @@ class LoginController
         // Redirige vers la page de login ou autre
         Flight::redirect('/');
     }
-
 }

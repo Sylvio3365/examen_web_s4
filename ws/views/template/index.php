@@ -53,9 +53,9 @@ $apiBase = "http://localhost/examen_web_s4/ws";
 
                         <div class="sb-sidenav-menu-heading">Menu principal</div>
 
-                        <a class="nav-link" href="index.html">
+                        <a class="nav-link" href="<?php echo $apiBase ?>/acceuil">
                             <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Tableau de bord
+                            Accueil
                         </a>
 
                         <a class="nav-link" href="<?= $apiBase ?>/formFond">

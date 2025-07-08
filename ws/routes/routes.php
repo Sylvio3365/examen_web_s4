@@ -61,3 +61,4 @@ Flight::route('POST /api/prets/comparaison/pdf', ['PretController', 'generateCom
 Flight::route('GET /montant', ['MontantController', 'getMontantParPeriode']);
 
 Flight::route('GET /montanttotal', ['MontantController', 'montanttotal']);
+Flight::route('GET /acceuil', ['LoginController', 'acceuil']);
