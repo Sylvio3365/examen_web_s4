@@ -6,7 +6,7 @@ class RemboursementController
 {
     public static function liste()
     {
-        $page = 'remboursement/index';
+        $page = 'remboursement/acceuil';
         Flight::render('template/index', ['page' => $page]);
     }
 
