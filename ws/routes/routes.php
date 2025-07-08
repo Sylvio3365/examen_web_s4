@@ -51,6 +51,8 @@ Flight::route('POST /annulerPret', ['PretController', 'annulerPret']);
 Flight::route('GET /template', ['TemplateController', 'template']);
 Flight::route('GET /', ['LoginController', 'formLogin']);
 Flight::route('POST /login', ['LoginController', 'loginPost']);
+Flight::route('GET /logout', ['LoginController', 'logout']);
+
 
 Flight::route('GET /comparaison', ['PretController', 'goComparaisonPage']);
 Flight::route('GET /api/prets/valides', ['PretController', 'getValidatedPrets']);
