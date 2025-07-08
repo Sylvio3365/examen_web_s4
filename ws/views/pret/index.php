@@ -1,3 +1,5 @@
+<?php $apiBase = Flight::get('base_url'); ?>
+
 <link rel="stylesheet" href="<?php echo $apiBase ?>/public/css/style_pret.css" />
     <div class="container my-4">
         <h2 class="text-center mb-4">Simulez votre prêt</h2>
@@ -37,7 +39,7 @@
             Mensualité : <span id="echeance">0</span> Ar
         </div>
 
-        <button class="btn btn-secondary mt-3" onclick="calculer()">SIMULER UN PRÊT</button>
+        <!-- <button class="btn btn-secondary mt-3" onclick="calculer()">SIMULER UN PRÊT</button> -->
         <button class="btn btn-primary mt-3" onclick="enregistrerPret()">ENREGISTRER LE PRÊT</button>
     </div>
 

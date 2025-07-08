@@ -1,5 +1,5 @@
 <?php
-$apiBase = "http://localhost/examen_web_s4/ws";
+$apiBase =  Flight::get('base_url');
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +19,7 @@ $apiBase = "http://localhost/examen_web_s4/ws";
         .bg-bleu-fonce {
             background-color: #1F2937;
             /* bleu foncé classique */
-        }   
+        }
     </style>
 </head>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
             text-align: center;
         }
@@ -48,7 +49,7 @@
         .table-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -115,6 +116,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -142,9 +144,9 @@
             </table>
         </div>
     </div>
-
+    <?php $base_url = Flight::get('base_url'); ?>
     <script>
-        const apiBase = "<?php echo $apiBase ?>";
+        const apiBase = "<?= $base_url ?>";
 
         function chargerRemboursementsEnAttente() {
             fetch(apiBase + "/remboursements/attente")
@@ -175,8 +177,8 @@
             if (!confirm("Confirmer la validation du remboursement ?")) return;
 
             fetch(`${apiBase}/remboursements/${idremboursement}/statut`, {
-                method: "POST"
-            })
+                    method: "POST"
+                })
                 .then(res => {
                     if (res.ok) {
                         alert("✅ Remboursement validé !");
@@ -193,4 +195,5 @@
         window.onload = chargerRemboursementsEnAttente;
     </script>
 </body>
+
 </html>

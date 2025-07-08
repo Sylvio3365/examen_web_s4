@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
             text-align: center;
         }
@@ -48,7 +49,7 @@
         .table-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -152,6 +153,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -180,6 +182,7 @@
 
         <p id="message" class="message"></p>
     </div>
+    <?php $apiBase = Flight::get('base_url'); ?>
 
     <script>
         const apiUrl = "<?php echo $apiBase ?>/pendingPret";
@@ -242,12 +245,12 @@
             };
 
             fetch(apiBase + "/validerPret", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Erreur réseau");
@@ -285,12 +288,12 @@
             };
 
             fetch(apiBase + "/annulerPret", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Erreur réseau");
@@ -338,4 +341,5 @@
         chargerPrets();
     </script>
 </body>
+
 </html>

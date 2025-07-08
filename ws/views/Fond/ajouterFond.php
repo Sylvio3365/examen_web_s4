@@ -40,9 +40,9 @@
             <h5 class="mb-0">Capital actuel disponible : <span id="capital">...</span> Ar</h5>
         </div>
     </div>
-
+    <?php $base_url = Flight::get('base_url'); ?>
     <script>
-        const apiBase = "<?php echo $apiBase ?>";
+        const apiBase = "<?= $base_url ?>";
 
         function ajouterFond() {
             const montant = document.getElementById("montant").value;

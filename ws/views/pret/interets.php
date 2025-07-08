@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
             text-align: center;
         }
@@ -49,7 +50,7 @@
             background: white;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
@@ -127,7 +128,7 @@
         .results-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-bottom: 30px;
         }
@@ -191,7 +192,7 @@
         .chart-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -248,6 +249,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -312,11 +314,11 @@
                 </div>
             </div>
         </div>
-
+        <?php $base_url = Flight::get('base_url'); ?>
     </div>
 
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?= $base_url ?>";
         let interetsChart = null;
         let currentData = [];
 
@@ -376,9 +378,9 @@
             const tbody = document.querySelector("#table-interets tbody");
             const tableFooter = document.getElementById('table-footer');
             const noDataMessage = document.getElementById('no-data-message');
-            
+
             tbody.innerHTML = "";
-            
+
             if (data.length === 0) {
                 noDataMessage.style.display = 'block';
                 tableFooter.style.display = 'none';
@@ -416,7 +418,7 @@
 
         function updateChart(data) {
             const ctx = document.getElementById('interetsChart').getContext('2d');
-            
+
             if (interetsChart) {
                 interetsChart.destroy();
             }
@@ -506,7 +508,7 @@
             const today = new Date();
             const currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
             const lastYear = (today.getFullYear() - 1) + '-' + String(today.getMonth() + 1).padStart(2, '0');
-            
+
             document.getElementById('date_fin').value = currentMonth;
             document.getElementById('date_debut').value = lastYear;
         }
@@ -518,4 +520,5 @@
         });
     </script>
 </body>
+
 </html>

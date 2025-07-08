@@ -195,9 +195,9 @@
             <div class="security-badge">Connexion sécurisée</div>
         </div>
     </div>
-
+    <?php $base_url = Flight::get('base_url'); ?>
     <script>
-        const apiBase = "http://localhost/examen_web_s4/ws";
+        const apiBase = "<?= $base_url ?>";
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
