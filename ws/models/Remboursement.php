@@ -3,6 +3,13 @@ require_once __DIR__ . '/../db.php';
 
 class Remboursement
 {
+    public static function findById($idremboursement)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("SELECT * FROM remboursement WHERE idremboursement = ?");
+        $stmt->execute([$idremboursement]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     public static function getRemboursementsEnAttente()
     {
@@ -62,5 +69,13 @@ class Remboursement
             idremboursement, idstatut, date_modif
         ) VALUES (?, ?, NOW())");
         $stmt->execute([$idremboursement, $idstatut]);
+    }
+
+    public static function inserEntrant($montant, $idmotif)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("INSERT INTO entrant (montant, date_, idmotif) VALUES (?, NOW(), ?)");
+        $stmt->execute([$montant, $idmotif]);
+        return $db->lastInsertId();
     }
 }
