@@ -25,6 +25,7 @@ Flight::route('GET /pret/generate-pdf/@id', ['PretController', 'generatePdf']);
 Flight::route('GET /pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('GET /api/pret/@id/pdf', ['PretController', 'generatePdf']);
 Flight::route('POST /api/interets', ['PretController', 'interets']);
+Flight::route('GET /clients/avec-prets', ['ClientController', 'listeAvecPrets']);
 
 Flight::route('POST /prets/add', ['PretController', 'addPret']);
 

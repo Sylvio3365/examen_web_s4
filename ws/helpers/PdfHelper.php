@@ -55,7 +55,7 @@ class PdfHelper extends FPDF
             $this->Cell(40, 7, $header, 1);
         }
         $this->Ln();
-        
+
         // Données
         $this->SetFont('Arial', '', 10);
         foreach ($data as $row) {
@@ -64,5 +64,35 @@ class PdfHelper extends FPDF
             }
             $this->Ln();
         }
+    }
+    public function ImprovedTable($headers, $data)
+    {
+        // En-têtes
+        $this->SetFont('Arial', 'B', 8);
+        foreach ($headers as $i => $header) {
+            $this->Cell($this->widths[$i], 7, $header, 1, 0, $this->aligns[$i]);
+        }
+        $this->Ln();
+
+        // Données
+        $this->SetFont('Arial', '', 8);
+        foreach ($data as $row) {
+            foreach ($row as $i => $col) {
+                $this->Cell($this->widths[$i], 6, $col, 1, 0, $this->aligns[$i]);
+            }
+            $this->Ln();
+        }
+    }
+
+    public function SetWidths($w)
+    {
+        // Tableau des largeurs de colonnes
+        $this->widths = $w;
+    }
+
+    public function SetAligns($a)
+    {
+        // Tableau des alignements
+        $this->aligns = $a;
     }
 }

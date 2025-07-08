@@ -48,5 +48,35 @@ class Client
         $stmt = $db->prepare("DELETE FROM client WHERE idclient = ?");
         $stmt->execute([$id]);
     }
+
+    public static function getAllWithLoans()
+    {
+        $db = getDB();
+        $stmt = $db->prepare("
+            SELECT c.*, 
+                COUNT(p.idpret) AS nombre_prets,
+                SUM(p.montant) AS total_montant
+            FROM client c
+            LEFT JOIN pret p ON c.idclient = p.idclient
+            GROUP BY c.idclient
+            ORDER BY c.nom, c.prenom
+        ");
+        $stmt->execute();
+        $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($clients as &$client) {
+            $stmt = $db->prepare("
+                SELECT p.*, tp.nom AS type_pret
+                FROM pret p
+                JOIN typepret tp ON p.idtypepret = tp.idtypepret
+                WHERE p.idclient = ?
+                ORDER BY p.date_creation DESC
+            ");
+            $stmt->execute([$client['idclient']]);
+            $client['prets'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $clients;
+    }
 }
 

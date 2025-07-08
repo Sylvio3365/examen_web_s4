@@ -21,6 +21,17 @@ class Remboursement
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public static function getByPretId($idPret)
+    {
+        $db = getDB();
+        $stmt = $db->prepare("
+        SELECT * FROM remboursement 
+        WHERE idpret = ?
+        ORDER BY annee, mois
+    ");
+        $stmt->execute([$idPret]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
     public static function insert($data)
