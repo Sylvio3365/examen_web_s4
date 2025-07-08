@@ -1,5 +1,5 @@
 <?php
-$apiBase = "http://localhost/examen_web_s4/ws";
+$apiBase = Flight::get('base_url');
 ?>
 
 <!DOCTYPE html>

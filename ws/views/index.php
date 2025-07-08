@@ -63,7 +63,7 @@
   </table>
 
   <script>
-    const apiBase = "http://localhost/tp-flightphp-crud/ws";
+    const apiBase = "<?= Flight::get('base_url') ?>";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();

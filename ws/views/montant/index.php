@@ -76,7 +76,8 @@
         const moisFin = document.getElementById("mois_fin").value;
         const anneeFin = document.getElementById("annee_fin").value;
 
-        const url = `http://localhost/examen_web_s4/ws/montant?mois_debut=${moisDebut}&annee_debut=${anneeDebut}&mois_fin=${moisFin}&annee_fin=${anneeFin}`;
+        const baseUrl = "<?= Flight::get('base_url') ?>";
+        const url = `${baseUrl}/montant?mois_debut=${moisDebut}&annee_debut=${anneeDebut}&mois_fin=${moisFin}&annee_fin=${anneeFin}`;
 
         fetch(url)
             .then(response => response.json())
