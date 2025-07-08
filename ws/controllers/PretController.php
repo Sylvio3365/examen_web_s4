@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/Etudiant.php';
 require_once __DIR__ . '/../helpers/Utils.php';
-require_once  __DIR__ . '/../models/Pret.php';
-require_once  __DIR__ . '/../models/Remboursement.php';
+require_once __DIR__ . '/../models/Pret.php';
+require_once __DIR__ . '/../models/Remboursement.php';
 require_once __DIR__ . '/../models/Pret.php';
 require_once __DIR__ . '/../helpers/PdfHelper.php';
 require_once __DIR__ . '/../models/Client.php';
@@ -55,9 +55,9 @@ class PretController
             ];
 
             try {
-                $id = Pret::create($data); // insert du prêt
+                $id = Pret::create($data); // insert du pret
                 Pret::insertPretEnAttente($id); // statut d'attente
-                Pret::insertIntoRemboursement($id); // échéancier
+                Pret::insertIntoRemboursement($id); // echeancier
                 Flight::json([
                     'status' => 'success',
                     'id' => $id
@@ -69,71 +69,94 @@ class PretController
                 ], 500);
             }
         } else {
-            Flight::json(['status' => 'error', 'message' => 'Méthode invalide'], 405);
+            Flight::json(['status' => 'error', 'message' => 'Methode invalide'], 405);
         }
     }
     public static function generatePdf($idPret)
     {
         try {
-            // Récupérer les données du prêt
+            // Recuperer les donnees du pret
             $pret = Pret::getById($idPret);
             if (!$pret) {
-                Flight::halt(404, 'Prêt non trouvé');
-                return;
+                throw new Exception("Pret introuvable");
+            }
+
+            // Verifier et initialiser misyassurance si non defini
+            if (!isset($pret['misyassurance'])) {
+                $pret['misyassurance'] = 0;
             }
 
             $client = Client::getById($pret['idclient']);
             if (!$client) {
-                Flight::halt(404, 'Client non trouvé');
-                return;
+                throw new Exception("Client introuvable");
             }
 
+            // Recuperer le type de pret
             $typePret = [
                 'nom' => $pret['type_pret'],
-                'taux_annuel' => $pret['taux_annuel']
+                'taux_annuel' => $pret['taux_annuel'],
+                'taux_assurance' => $pret['taux_assurance'] ?? 0
             ];
 
             // Calculer l'amortissement
             $amortissement = Pret::calculerAmortissement($idPret);
 
-            // Créer le PDF
-            $pdf = new PdfHelper(utf8_decode('Prêt'), __DIR__ . '/../public/images/logo.png');
+            // Recuperer les remboursements depuis la base
+            $remboursements = Remboursement::getByPretId($idPret);
+
+            // Creer le PDF
+            $pdf = new PdfHelper(utf8_decode(('Pret N').$pret['idpret']), __DIR__ . '/../public/images/logo.png');
             $pdf->AliasNbPages();
             $pdf->AddPage();
 
-            // Informations de l'établissement
-            $pdf->SectionTitle(utf8_decode('Informations de l\'établissement financier'));
+
+            // 1. Informations de l'etablissement
+            $pdf->SectionTitle(utf8_decode('1. Informations de l\'etablissement financier'));
             $pdf->InfoLine('Nom:', 'Banque SMD');
             $pdf->InfoLine('Adresse:', utf8_decode('123 Mahalavolona, Andoharanofotsy'));
-            $pdf->InfoLine('Contact:', 'contact@banquesmd.mg | +261 34 00 000 00');
+            $pdf->InfoLine('Telephone:', '+261 34 00 000 00');
+            $pdf->InfoLine('Email:', 'contact@banquesmd.mg');
+            $pdf->InfoLine('NIF:', '1234567890');
+            $pdf->InfoLine('STAT:', '987654321');
             $pdf->Ln(10);
 
-            // Informations du client
-            $pdf->SectionTitle('Informations du client');
+            // 2. Informations du client
+            $pdf->SectionTitle(utf8_decode('2. Informations du client'));
             $pdf->InfoLine('Nom complet:', utf8_decode($client['prenom'] . ' ' . $client['nom']));
-            $pdf->InfoLine('Date de naissance:', $client['dtn']);
-            $pdf->InfoLine('ID Client:', $pret['idclient']);
+            $pdf->InfoLine('Date de naissance:', date('d/m/Y', strtotime($client['dtn'])));
+            $pdf->InfoLine('Adresse:', utf8_decode($client['adresse'] ?? 'Non renseignee'));
+            $pdf->InfoLine('Telephone:', $client['telephone'] ?? 'Non renseigne');
+            $pdf->InfoLine('Email:', $client['email'] ?? 'Non renseigne');
+            $pdf->InfoLine('N° Client:', $client['idclient']);
             $pdf->Ln(10);
 
-            // Détails du prêt
-            $pdf->SectionTitle(utf8_decode('Détails du prêt'));
-            $pdf->InfoLine(utf8_decode('Numéro de prêt:'), $pret['idpret']);
-            $pdf->InfoLine(utf8_decode('Date de création:'), date('d/m/Y'));
-            $pdf->InfoLine(utf8_decode('Type de prêt:'), utf8_decode($typePret['nom']));
-            $pdf->InfoLine(utf8_decode('Montant emprunté:'), number_format($pret['montant'], 2, ',', ' ') . ' MGA');
-            $pdf->InfoLine(utf8_decode('Taux d\'intérêt annuel:'), $typePret['taux_annuel'] . '%');
-            $pdf->InfoLine(utf8_decode('Durée du prêt:'), $pret['duree'] . ' mois');
-            $pdf->InfoLine(utf8_decode('Délai de remboursement:'), $pret['delais'] . ' mois');
+            // 3. Details du pret
+            $pdf->SectionTitle(utf8_decode('3. Details du pret'));
+            $pdf->InfoLine('N° Pret:', $pret['idpret']);
+            $pdf->InfoLine('Date de creation:', date('d/m/Y', strtotime($pret['date_creation'] ?? 'now')));
+            $pdf->InfoLine('Type de pret:', utf8_decode($typePret['nom']));
+            $pdf->InfoLine('Montant emprunte:', number_format($pret['montant'], 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Taux d\'interet annuel:', $typePret['taux_annuel'] . '%');
+            $pdf->InfoLine('Taux d\'assurance:', $typePret['taux_assurance'] . '%');
+            $pdf->InfoLine('Duree du pret:', $pret['duree'] . ' mois');
+            $pdf->InfoLine('Delai de grâce:', $pret['delais'] . ' mois');
+            $pdf->InfoLine('Assurance incluse:', $pret['misyassurance'] ? 'Oui' : 'Non');
             $pdf->Ln(10);
 
-            // Modalités financières
-            $pdf->SectionTitle(utf8_decode('Modalités financières'));
+            // 4. Modalites financières
+            $pdf->SectionTitle(utf8_decode('4. Modalites financières'));
+
+            // Calcul des totaux
             $totalInterets = array_sum(array_column($amortissement, 'interet'));
 
             // Trouver la première mensualité non-nulle (après le délai)
+            $totalAssurance = array_sum(array_column($amortissement, 'assurance'));
+            $totalRemboursement = $pret['montant'] + $totalInterets + $totalAssurance;
+
+            // Trouver la première mensualite après delai
             $mensualite = 0;
             foreach ($amortissement as $ligne) {
-                if ($ligne['echeance'] > 0) {
+                if ($ligne['echeance'] > 0 && $ligne['echeance'] != $ligne['assurance']) {
                     $mensualite = $ligne['echeance'];
                     break;
                 }
@@ -142,47 +165,72 @@ class PretController
             $pdf->InfoLine(utf8_decode('Mensualité fixe:'), number_format($mensualite, 2, ',', ' ') . ' MGA');
             $pdf->InfoLine(utf8_decode('Total des intérêts:'), number_format($totalInterets, 2, ',', ' ') . ' MGA');
             $pdf->InfoLine(utf8_decode('Montant total à rembourser:'), number_format($pret['montant'] + $totalInterets, 2, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Mensualite (hors delai):', number_format($mensualite, 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Total des interets:', number_format($totalInterets, 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Total de l\'assurance:', number_format($totalAssurance, 0, ',', ' ') . ' MGA');
+            $pdf->InfoLine('Montant total à rembourser:', number_format($totalRemboursement, 0, ',', ' ') . ' MGA');
             $pdf->Ln(10);
 
-            // Période
-            $pdf->SectionTitle(utf8_decode('Période'));
-            $pdf->InfoLine(utf8_decode('Date de début:'), date('d/m/Y'));
-            $pdf->InfoLine(utf8_decode('Date de fin prévue:'), date('d/m/Y', strtotime('+' . ($pret['duree'] + $pret['delais']) . ' months')));
+            // 5. Periode
+            $pdf->SectionTitle(utf8_decode('5. Periode de remboursement'));
+            $dateDebut = date('d/m/Y', strtotime($pret['date_creation'] ?? 'now'));
+            $dateFin = date('d/m/Y', strtotime(($pret['date_creation'] ?? 'now') . ' +' . ($pret['duree'] + $pret['delais']) . ' months'));
+            $pdf->InfoLine('Date de debut:', $dateDebut);
+            $pdf->InfoLine('Date de fin prevue:', $dateFin);
             $pdf->Ln(10);
 
-            // Tableau d'amortissement (3 premières mensualités après délai)
-            $pdf->SectionTitle(utf8_decode('Échéancier (extrait)'));
-            $headers = ['Mois', utf8_decode('Année'), utf8_decode('Échéance'), utf8_decode('Intérêt'), 'Capital', 'Reste'];
+            // 6. Tableau d'amortissement
+            $pdf->SectionTitle(utf8_decode('6. Tableau d\'amortissement'));
+            $pdf->SetFont('Arial', '', 8);
+
+            // En-tetes du tableau
+            $headers = [
+                'Mois',
+                'Annee',
+                'echeance',
+                'Interet',
+                'Capital',
+                'Assurance',
+                'Reste du'
+            ];
+
+            // Preparation des donnees
             $data = [];
-
-            $compteur = 0;
-            foreach ($amortissement as $i => $ligne) {
-                if ($ligne['echeance'] > 0 && $compteur < 3) {
-                    $data[] = [
-                        $ligne['mois'],
-                        $ligne['annee'],
-                        number_format($ligne['echeance'], 2, ',', ' '),
-                        number_format($ligne['interet'], 2, ',', ' '),
-                        number_format($ligne['amortissement'], 2, ',', ' '),
-                        number_format($ligne['capital_restant'], 2, ',', ' ')
-                    ];
-                    $compteur++;
-                }
+            foreach ($amortissement as $ligne) {
+                $data[] = [
+                    $ligne['mois'],
+                    $ligne['annee'],
+                    number_format($ligne['echeance'], 0, ',', ' '),
+                    number_format($ligne['interet'], 0, ',', ' '),
+                    number_format($ligne['amortissement'], 0, ',', ' '),
+                    number_format($ligne['assurance'], 0, ',', ' '),
+                    number_format($ligne['capital_restant'], 0, ',', ' ')
+                ];
             }
 
-            $pdf->SimpleTable($headers, $data);
+            // Affichage du tableau
+            $pdf->SetWidths([10, 10, 25, 25, 25, 25, 30]); // Largeurs des colonnes
+            $pdf->SetAligns(['C', 'C', 'R', 'R', 'R', 'R', 'R']); // Alignements
+            $pdf->ImprovedTable($headers, $data);
             $pdf->Ln(10);
 
 
             // Signature
+            $pdf->SetFont('Arial', 'I', 10);
             $pdf->Cell(0, 6, utf8_decode('Fait à Antananarivo, le ') . date('d/m/Y'), 0, 1, 'R');
             $pdf->Cell(0, 20, 'Pour la Banque SMD', 0, 1, 'R');
             $pdf->Cell(0, 6, '_________________________', 0, 1, 'R');
+            $pdf->Cell(0, 6, utf8_decode('Le Responsable Credit'), 0, 1, 'R');
+            $pdf->Ln(20);
+            $pdf->Cell(0, 6, 'Le Client', 0, 1, 'R');
+            $pdf->Cell(0, 6, '_________________________', 0, 1, 'R');
+            $pdf->Cell(0, 6, utf8_decode($client['prenom'] . ' ' . $client['nom']), 0, 1, 'R');
 
-            // Output
+            // Generation du PDF
             $pdf->Output('I', 'pret_' . $pret['idpret'] . '.pdf');
+
         } catch (Exception $e) {
-            Flight::halt(500, 'Erreur lors de la génération du PDF: ' . $e->getMessage());
+            Flight::halt(500, 'Erreur lors de la generation du PDF: ' . $e->getMessage());
         }
     }
 }
