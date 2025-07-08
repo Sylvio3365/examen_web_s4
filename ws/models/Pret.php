@@ -75,7 +75,6 @@ class Pret
         return $tableau;
     }
 
-
     public static function getById($id)
     {
         $db = getDB();
