@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +28,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
             text-align: center;
         }
@@ -50,7 +49,7 @@
             background: white;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
 
@@ -128,7 +127,7 @@
         .results-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
             margin-bottom: 30px;
         }
@@ -192,7 +191,7 @@
         .chart-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
@@ -249,7 +248,6 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
     <div class="container">
         <div class="header">
@@ -315,47 +313,8 @@
         </div>
     </div>
 
-    <!-- Tableau -->
-    <div class="table-responsive mb-5">
-        <table class="table table-striped table-hover" id="table-interets">
-            <thead class="table-dark">
-                <tr>
-                    <th>Mois/Année</th>
-                    <th class="text-end">Nombre remboursements</th>
-                    <th class="text-end">Total des intérêts</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot id="table-footer" style="display: none;">
-                <tr class="table-active">
-                    <th>Total</th>
-                    <th class="text-end" id="total-remboursements">0</th>
-                    <th class="text-end" id="total-interets">0,00 Ar</th>
-                </tr>
-            </tfoot>
-        </table>
-        <div id="no-data-message" class="text-center" style="display: none;">
-            <p class="text-muted">Aucun résultat trouvé</p>
-        </div>
-    </div>
-
-    <!-- Graphique -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Visualisation graphique</h3>
-        </div>
-        <div class="card-body">
-            <div class="chart-container">
-                <canvas id="interetsChart"></canvas>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    <!-- Chart.js (déjà chargé si layout global inclut) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
+        const apiBase = "http://localhost/examen_web_s4/ws";
         let interetsChart = null;
         let currentData = [];
 
@@ -364,27 +323,11 @@
             xhr.open(method, apiBase + url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        try {
-                            callback(JSON.parse(xhr.responseText));
-                        } catch (e) {
-                            alert("Erreur lors de la lecture de la réponse.");
-                        }
-                    } else {
-                        alert("Erreur API: " + xhr.status);
-                    }
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    callback(JSON.parse(xhr.responseText));
                 }
             };
             xhr.send(data ? JSON.stringify(data) : null);
-        }
-
-        function initializeDates() {
-            const today = new Date();
-            const currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
-            const lastYear = (today.getFullYear() - 1) + '-' + String(today.getMonth() + 1).padStart(2, '0');
-            document.getElementById('date_fin').value = currentMonth;
-            document.getElementById('date_debut').value = lastYear;
         }
 
         function chargerInterets() {
@@ -399,8 +342,15 @@
             const dateDebut = document.getElementById('date_debut').value;
             const dateFin = document.getElementById('date_fin').value;
 
-            if (!dateDebut || !dateFin) return alert('Veuillez sélectionner une date de début et de fin.');
-            if (dateDebut > dateFin) return alert('La date de début ne peut pas dépasser la date de fin.');
+            if (!dateDebut || !dateFin) {
+                alert('Veuillez sélectionner une date de début et une date de fin.');
+                return;
+            }
+
+            if (dateDebut > dateFin) {
+                alert('La date de début ne peut pas être supérieure à la date de fin.');
+                return;
+            }
 
             const data = {
                 date_debut: dateDebut + '-01',
@@ -424,16 +374,17 @@
             const tbody = document.querySelector("#table-interets tbody");
             const tableFooter = document.getElementById('table-footer');
             const noDataMessage = document.getElementById('no-data-message');
+            
             tbody.innerHTML = "";
-
-            if (!data.length) {
-                tableFooter.style.display = 'none';
+            
+            if (data.length === 0) {
                 noDataMessage.style.display = 'block';
+                tableFooter.style.display = 'none';
                 return;
             }
 
-            tableFooter.style.display = 'table-footer-group';
             noDataMessage.style.display = 'none';
+            tableFooter.style.display = 'table-footer-group';
 
             let totalRemboursements = 0;
             let totalInterets = 0;
@@ -441,12 +392,13 @@
             data.forEach(interet => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                <td>${String(interet.mois).padStart(2, '0')}/${interet.annee}</td>
-                <td class="text-end">${interet.nombre_remboursements}</td>
-                <td class="text-end">${parseFloat(interet.total_interets).toLocaleString('fr-FR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })} Ar</td>`;
+                    <td>${String(interet.mois).padStart(2, '0')}/${interet.annee}</td>
+                    <td class="text-end">${interet.nombre_remboursements}</td>
+                    <td class="text-end">${parseFloat(interet.total_interets).toLocaleString('fr-FR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })} Ar</td>
+                `;
                 tbody.appendChild(tr);
 
                 totalRemboursements += parseInt(interet.nombre_remboursements);
@@ -461,20 +413,17 @@
         }
 
         function updateChart(data) {
-            const canvas = document.getElementById('interetsChart');
-            if (!canvas) return;
+            const ctx = document.getElementById('interetsChart').getContext('2d');
+            
+            if (interetsChart) {
+                interetsChart.destroy();
+            }
 
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            if (interetsChart) interetsChart.destroy();
-
-            if (!data.length) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (data.length === 0) {
                 ctx.font = '16px Arial';
-                ctx.fillStyle = '#666';
+                ctx.fillStyle = '#7f8c8d';
                 ctx.textAlign = 'center';
-                ctx.fillText('Aucune donnée à afficher', canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Aucune donnée à afficher', ctx.canvas.width / 2, ctx.canvas.height / 2);
                 return;
             }
 
@@ -488,21 +437,28 @@
                     datasets: [{
                         label: 'Intérêts gagnés (Ar)',
                         data: interetsData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
+                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             callbacks: {
-                                label: ctx => ctx.parsed.y.toLocaleString('fr-FR', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                }) + ' Ar'
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString('fr-FR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    }) + ' Ar';
+                                }
                             }
                         }
                     },
@@ -511,16 +467,32 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Montant (Ar)'
+                                text: 'Montant (Ar)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
                             },
                             ticks: {
-                                callback: val => val.toLocaleString('fr-FR')
+                                callback: function(value) {
+                                    return value.toLocaleString('fr-FR');
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Mois/Année'
+                                text: 'Mois/Année',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
@@ -528,11 +500,20 @@
             });
         }
 
-        // Initialisation sécurisée après insertion HTML
-        setTimeout(() => {
+        function initializeDates() {
+            const today = new Date();
+            const currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+            const lastYear = (today.getFullYear() - 1) + '-' + String(today.getMonth() + 1).padStart(2, '0');
+            
+            document.getElementById('date_fin').value = currentMonth;
+            document.getElementById('date_debut').value = lastYear;
+        }
+
+        // Initialiser au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
             initializeDates();
             chargerInterets();
-            document.getElementById('btn-filtrer').addEventListener('click', filtrerInterets);
-            document.getElementById('btn-reset').addEventListener('click', resetFilters);
-        }, 100);
+        });
     </script>
+</body>
+</html>

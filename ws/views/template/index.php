@@ -1,6 +1,6 @@
  <?php
-$apiBase = "http://localhost/examen_web_s4/ws";
- ?> 
+    $apiBase = "http://localhost/examen_web_s4/ws";
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
