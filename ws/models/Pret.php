@@ -12,13 +12,13 @@ class Pret
 
     public static function insertIntoRemboursement($idpret)
     {
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
         $db = getDB();
         $pret = Pret::getById($idpret);
 
-=======
+=========
         $pret = Pret::getById($idpret);
->>>>>>> pret_sylvvvv
+>>>>>>>>> Temporary merge branch 2
         if (!$pret) {
             throw new Exception("Prêt introuvable !");
         }
@@ -27,7 +27,7 @@ class Pret
         $duree = $pret['duree'];
         $taux_annuel = $pret['taux_annuel'];
         $taux_mensuel = $taux_annuel / 100 / 12;
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
         $assurance_taux = $pret['taux_assurance'] ?? 0;
         $assurance_totale = $montant * $assurance_taux / 100;
         $assurance_mensuelle = $assurance_totale / $duree;
@@ -79,7 +79,7 @@ class Pret
         //         'idpret' => $idpret
         //     ]);
         // }
-=======
+=========
         $delais = $pret['delais'] ?? 0;
         $misyassurance = $pret['misyassurance'];
 
@@ -129,7 +129,7 @@ class Pret
         }
 
         return $tableau;
->>>>>>> pret_sylvvvv
+>>>>>>>>> Temporary merge branch 2
     }
 
     public static function getById($id)
@@ -152,13 +152,13 @@ class Pret
             $data->montant,
             $data->idtypepret,
             $data->idclient,
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
             $data->delais ?? 0,
             $data->delais
-=======
+=========
             $data->delais,
             $data->misyassurance // ← c’est ça qu’il manquait
->>>>>>> pret_sylvvvv
+>>>>>>>>> Temporary merge branch 2
         ]);
         return $db->lastInsertId();
     }

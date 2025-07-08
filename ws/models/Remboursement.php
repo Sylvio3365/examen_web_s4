@@ -10,12 +10,18 @@ class Remboursement
         $stmt = $db->prepare("
         SELECT r.*
         FROM remboursement r
-        JOIN remboursement_statut rs ON r.idremboursement = rs.idremboursement
+        JOIN remboursement_statut rs ON rs.idremboursement = r.idremboursement
+        JOIN (
+            SELECT idremboursement, MAX(date_modif) AS max_date
+            FROM remboursement_statut
+            GROUP BY idremboursement
+        ) latest ON latest.idremboursement = rs.idremboursement AND latest.max_date = rs.date_modif
         WHERE rs.idstatut = 1
     ");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public static function insert($data)
     {

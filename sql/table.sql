@@ -120,6 +120,10 @@ ALTER TABLE pret ADD COLUMN misyassurance FLOAT DEFAULT 0;
 
 ALTER TABLE remboursement MODIFY COLUMN valeur_nette FLOAT DEFAULT 0;
 
+ALTER TABLE remboursement_statut MODIFY COLUMN date_modif DATETIME;
+
+ALTER TABLE pret_statut MODIFY COLUMN date_modif DATETIME;
+
 -- Insertion dans Statut
 INSERT INTO
     statut (valeur)
