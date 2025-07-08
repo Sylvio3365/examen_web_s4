@@ -33,6 +33,8 @@ class Pret
 
         $mois_actuel = (int)date('n');
         $annee_actuelle = (int)date('Y');
+        $mois_actuel = (int)date('n');
+        $annee_actuelle = (int)date('Y');
 
         $tableau = [];
 
@@ -61,6 +63,7 @@ class Pret
 
                 $capitalRestant -= $amortissement;
                 if ($capitalRestant < 0) $capitalRestant = 0;
+                if ($capitalRestant < 0) $capitalRestant = 0;
             }
         }
 
@@ -72,9 +75,11 @@ class Pret
         return $tableau;
     }
 
+
     public static function getById($id)
     {
         $db = getDB();
+        $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
         $stmt = $db->prepare("SELECT p.*, tp.nom AS type_pret, tp.taux_annuel, tp.taux_assurance as taux_assurance FROM pret p JOIN typepret tp ON p.idtypepret = tp.idtypepret WHERE p.idpret = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -159,6 +164,7 @@ class Pret
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
                     'echeance' => 0,
+                    'echeance' => 0,
                     'interet' => 0,
                     'amortissement' => 0,
                     'capital_restant' => $capitalRestant
@@ -172,6 +178,7 @@ class Pret
                 $tableau[] = [
                     'mois' => $i,
                     'annee' => date('Y', strtotime("+$i months")),
+                    'echeance' => $mensualite,
                     'echeance' => $mensualite,
                     'interet' => $interet,
                     'amortissement' => $amortissement,
